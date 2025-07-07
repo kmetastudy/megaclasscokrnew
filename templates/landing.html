@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 해피 러닝 - 특별한 친구들을 위한 즐거운 학습 플랫폼 ⭐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 부드럽고 느린 애니메이션 */
+        @keyframes gentle-float {
+            0%, 100% { 
+                transform: translateY(0px) scale(1); 
+            }
+            50% { 
+                transform: translateY(-8px) scale(1.02); 
+            }
+        }
+        
+        @keyframes soft-bounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+        
+        @keyframes gentle-wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+        
+        @keyframes soft-sparkle {
+            0% { transform: scale(0.8); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.3; }
+        }
+        
+        @keyframes gentle-heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes slow-rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes celebration {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            25% { transform: translateY(-30px) rotate(45deg) scale(1.1); opacity: 0.9; }
+            50% { transform: translateY(-60px) rotate(90deg) scale(1.2); opacity: 0.7; }
+            75% { transform: translateY(-90px) rotate(135deg) scale(1.1); opacity: 0.5; }
+            100% { transform: translateY(-120px) rotate(180deg) scale(0.8); opacity: 0; }
+        }
+        
+        .rainbow-float { animation: gentle-float 8s ease-in-out infinite; }
+        .bounce-happy { animation: soft-bounce 4s ease-in-out infinite; }
+        .wiggle { animation: gentle-wiggle 3s ease-in-out infinite; }
+        .sparkle { animation: soft-sparkle 4s ease-in-out infinite; }
+        .heartbeat { animation: gentle-heartbeat 3s ease-in-out infinite; }
+        
+        /* 무지개 그라디언트 */
+        .rainbow-gradient {
+            background: linear-gradient(45deg, 
+                #ff6b6b 0%, #4ecdc4 14%, #45b7d1 28%, 
+                #96ceb4 42%, #feca57 56%, #ff9ff3 70%, 
+                #54a0ff 84%, #5f27cd 100%);
+            background-size: 400% 400%;
+            animation: slow-rainbow-bg 12s ease infinite;
+        }
+        
+        .rainbow-text {
+            background: linear-gradient(45deg, 
+                #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, 
+                #feca57, #ff9ff3, #54a0ff, #5f27cd);
+            background-size: 400% 400%;
+            animation: slow-rainbow-bg 8s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 즐거운 카드 효과 */
+        .happy-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.3s ease;
+        }
+        
+        .happy-card:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+        
+        /* 큰 버튼 스타일 */
+        .big-happy-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            border-radius: 25px;
+            padding: 20px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .big-happy-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        /* 축하 이벤트 효과 */
+        .celebration-particle {
+            position: absolute;
+            font-size: 30px;
+            animation: celebration 3s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        /* 스크롤 애니메이션 */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+        
+        .scroll-animate.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* 별 반짝임 효과 */
+        .star-field {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            color: #feca57;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        /* 하트 떠다니는 효과 */
+        .floating-heart {
+            position: absolute;
+            color: #ff6b6b;
+            font-size: 20px;
+            animation: rainbow-float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="font-sans overflow-x-hidden bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100">
+    <!-- 즐거운 네비게이션 -->
+    <nav class="fixed w-full z-50 transition-all duration-500 bg-white/90 backdrop-blur-lg shadow-lg mb-8" id="navbar">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-16 h-16 rainbow-gradient rounded-full flex items-center justify-center shadow-lg bounce-happy">
+                        <span class="text-3xl">🌈</span>
+                    </div>
+                    <div>
+                        <span class="rainbow-text font-bold text-2xl">해피 러닝</span>
+                        <div class="text-purple-600 text-sm font-bold">✨ 즐거운 학습 친구 ✨</div>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#features" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">📚 학습하기</a>
+                    <a href="#subjects" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">🎯 과목들</a>
+                    <a href="#achievements" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">🏆 성취하기</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div id="userInfo" style="display: none;" class="happy-card rounded-full px-4 py-2">
+                        <span class="text-purple-600 font-bold" id="userName">환영해요! 😊</span>
+                    </div>
+                    <div id="authButtons">
+                        <a href="/accounts/login/" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg mr-4">
+                            🔑 로그인
+                        </a>
+                        <button class="big-happy-btn heartbeat" onclick="window.location.href='/accounts/register/teacher/'">
+                            👩‍🏫 선생님 가입
+                        </button>
+                    </div>
+                    <div id="dashboardButtons" style="display: none;">
+                        <a href="/teacher/" class="big-happy-btn mr-4" style="background: linear-gradient(45deg, #4ecdc4, #96ceb4);">
+                            👩‍🏫 선생님 화면
+                        </a>
+                        <a href="/student/" class="big-happy-btn" style="background: linear-gradient(45deg, #ff6b6b, #feca57);">
+                            👦👧 학생 화면
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 히어로 섹션 -->
+    <section class="rainbow-gradient min-h-screen flex items-center relative overflow-hidden star-field">
+        <!-- 별들 -->
+        <div class="star" style="top: 10%; left: 10%; animation-delay: 0s;">⭐</div>
+        <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;">✨</div>
+        <div class="star" style="top: 70%; left: 20%; animation-delay: 1s;">🌟</div>
+        <div class="star" style="top: 80%; left: 90%; animation-delay: 1.5s;">💫</div>
+        <div class="star" style="top: 30%; left: 70%; animation-delay: 2s;">⭐</div>
+        
+        <!-- 하트들 -->
+        <div class="floating-heart" style="top: 15%; left: 15%; animation-delay: 0s;">💖</div>
+        <div class="floating-heart" style="top: 60%; left: 85%; animation-delay: 1s;">💝</div>
+        <div class="floating-heart" style="top: 85%; left: 10%; animation-delay: 2s;">💕</div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-5xl mx-auto text-center text-white">
+                <h1 class="text-7xl lg:text-8xl font-bold mb-8 rainbow-float text-shadow-lg">
+                    🌈 해피 러닝 🌈
+                </h1>
+                <h2 class="text-4xl mb-8 bounce-happy">
+                    특별한 친구들을 위한<br>
+                    <span class="text-yellow-300">✨ 맞춤형 즐거운 학습 ✨</span>
+                </h2>
+                <p class="text-2xl mb-12 text-blue-100 max-w-3xl mx-auto leading-relaxed">
+                    🎯 개별 맞춤 학습으로 모든 친구가 성공할 수 있어요!<br>
+                    🏆 문제를 풀 때마다 재미있는 이벤트가 가득!<br>
+                    💝 함께 배우고 함께 성장하는 행복한 시간!
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-8 justify-center mb-16">
+                    <a href="/accounts/login/" class="big-happy-btn rainbow-float" onclick="showSuccessEvent()">
+                        🎮 학습 시작하기 🎮
+                    </a>
+                   
+                </div>
+                
+                <!-- 성취 통계 -->
+                <div class="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="happy-card rounded-3xl p-8 wiggle">
+                        <div class="text-5xl mb-4">🏫</div>
+                        <h3 class="text-4xl font-bold mb-2 rainbow-text">50+</h3>
+                        <p class="text-purple-600 font-bold text-xl">행복한 학교</p>
+                    </div>
+                    <div class="happy-card rounded-3xl p-8 bounce-happy" style="animation-delay: 0.2s;">
+                        <div class="text-5xl mb-4">👦👧</div>
+                        <h3 class="text-4xl font-bold mb-2 rainbow-text">3,000+</h3>
+                        <p class="text-purple-600 font-bold text-xl">즐거운 친구들</p>
+                    </div>
+                    <div class="happy-card rounded-3xl p-8 heartbeat" style="animation-delay: 0.4s;">
+                        <div class="text-5xl mb-4">🎉</div>
+                        <h3 class="text-4xl font-bold mb-2 rainbow-text">98%</h3>
+                        <p class="text-purple-600 font-bold text-xl">행복 지수</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 학습 과목 섹션 -->
+    <section id="subjects" class="py-24 bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20 scroll-animate">
+                <h2 class="text-6xl font-bold rainbow-text mb-6">
+                    🎯 재미있는 학습 과목들 🎯
+                </h2>
+                <p class="text-3xl text-purple-600 font-bold max-w-3xl mx-auto">
+                    모든 친구들이 좋아하는 다양한 과목으로 즐겁게 배워요!
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="location.href='/subjects/korean/'">
+                    <div class="text-6xl mb-4">📖</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">한글 배우기</h3>
+                    <p class="text-lg text-gray-600">재미있는 글자와 단어 학습</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="location.href='/subjects/math/'">
+                    <div class="text-6xl mb-4">🔢</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">숫자 놀이</h3>
+                    <p class="text-lg text-gray-600">신나는 숫자와 계산 게임</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="location.href='/subjects/art/'">
+                    <div class="text-6xl mb-4">🎨</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">그림 그리기</h3>
+                    <p class="text-lg text-gray-600">창의적인 예술 활동</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="location.href='/subjects/music/'">
+                    <div class="text-6xl mb-4">🎵</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">노래하기</h3>
+                    <p class="text-lg text-gray-600">즐거운 음악과 리듬</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="location.href='/subjects/pe/'">
+                    <div class="text-6xl mb-4">⚽</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">몸 움직이기</h3>
+                    <p class="text-lg text-gray-600">건강한 신체 활동</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="location.href='/subjects/science/'">
+                    <div class="text-6xl mb-4">🔬</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">신기한 실험</h3>
+                    <p class="text-lg text-gray-600">재미있는 과학 탐험</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="location.href='/subjects/social/'">
+                    <div class="text-6xl mb-4">🌍</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">세상 알기</h3>
+                    <p class="text-lg text-gray-600">우리 주변 세계 탐구</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="location.href='/subjects/life/'">
+                    <div class="text-6xl mb-4">🏠</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-4">생활 배우기</h3>
+                    <p class="text-lg text-gray-600">일상생활 기술 연습</p>
+                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 학습 기능 섹션 -->
+    <section id="features" class="py-24 bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20 scroll-animate">
+                <h2 class="text-6xl font-bold rainbow-text mb-6">
+                    🎊 특별한 학습 기능들 🎊
+                </h2>
+                <p class="text-3xl text-purple-600 font-bold max-w-4xl mx-auto">
+                    모든 친구들이 재미있게 배울 수 있는 맞춤형 기능들이 가득해요!
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- 개별 맞춤 학습 -->
+                <div class="happy-card rounded-3xl p-10 text-center wiggle" onclick="location.href='/features/personalized/'">
+                    <div class="text-7xl mb-6">🎯</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">개별 맞춤 학습</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        각 친구의 속도에 맞춰서<br>천천히 차근차근 배워요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">✅</span>개인별 학습 속도 조절
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">✅</span>쉬운 설명과 큰 글씨
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">✅</span>반복 학습 지원
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 재미있는 이벤트 -->
+                <div class="happy-card rounded-3xl p-10 text-center bounce-happy" onclick="location.href='/features/events/'">
+                    <div class="text-7xl mb-6">🎉</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">재미있는 이벤트</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        문제를 맞힐 때마다<br>신나는 축하 파티가 열려요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🎊</span>축하 애니메이션
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🏆</span>성취 배지 획득
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🎵</span>기쁜 음악과 효과음
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 쉬운 조작 -->
+                <div class="happy-card rounded-3xl p-10 text-center heartbeat" onclick="location.href='/features/interface/'">
+                    <div class="text-7xl mb-6">👆</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">쉬운 조작</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        큰 버튼과 간단한 터치로<br>누구나 쉽게 사용할 수 있어요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">👆</span>큰 버튼과 아이콘
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🗣️</span>음성 안내 지원
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🌈</span>밝고 예쁜 화면
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 선생님 도구 -->
+                <div class="happy-card rounded-3xl p-10 text-center rainbow-float" onclick="location.href='/teacher/dashboard/'">
+                    <div class="text-7xl mb-6">👩‍🏫</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">선생님 도구</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        선생님이 각 친구의 성장을<br>쉽게 확인할 수 있어요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">📊</span>학습 진도 관리
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">💝</span>개별 피드백 작성
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">📈</span>성장 기록 추적
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 협력 학습 -->
+                <div class="happy-card rounded-3xl p-10 text-center wiggle" onclick="location.href='/features/collaboration/'">
+                    <div class="text-7xl mb-6">🤝</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">함께 배우기</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        친구들과 함께 도우며<br>즐겁게 학습해요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">👫</span>친구와 함께 문제 풀기
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🎁</span>도움 주고받기
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🌟</span>팀 성취 축하하기
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 안전한 환경 -->
+                <div class="happy-card rounded-3xl p-10 text-center bounce-happy" onclick="location.href='/features/safety/'">
+                    <div class="text-7xl mb-6">🛡️</div>
+                    <h3 class="text-3xl font-bold text-purple-600 mb-6">안전한 환경</h3>
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        모든 친구들이 안전하고<br>편안하게 학습할 수 있어요!
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">🔒</span>안전한 학습 공간
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">💝</span>긍정적인 피드백만
+                        </div>
+                        <div class="flex items-center justify-center text-lg text-green-600">
+                            <span class="mr-3">😊</span>스트레스 없는 학습
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 성취와 보상 섹션 -->
+    <section id="achievements" class="py-24 bg-gradient-to-br from-orange-100 via-pink-100 to-red-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20 scroll-animate">
+                <h2 class="text-6xl font-bold rainbow-text mb-6">
+                    🏆 멋진 성취와 보상들 🏆
+                </h2>
+                <p class="text-3xl text-purple-600 font-bold max-w-4xl mx-auto">
+                    열심히 학습한 모든 친구들에게 특별한 선물이 있어요!
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="achievementClick('별')">
+                    <div class="text-6xl mb-4">⭐</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-2">별 모으기</h3>
+                    <p class="text-lg text-gray-600">문제 맞힐 때마다 별 획득!</p>
+                    <div class="mt-4 text-orange-500 text-xl">📊 2,847개</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="achievementClick('배지')">
+                    <div class="text-6xl mb-4">🏅</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-2">특별 배지</h3>
+                    <p class="text-lg text-gray-600">성취 단계별 멋진 배지!</p>
+                    <div class="mt-4 text-orange-500 text-xl">🏆 156개</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="achievementClick('인증서')">
+                    <div class="text-6xl mb-4">📜</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-2">수료증</h3>
+                    <p class="text-lg text-gray-600">과목 완주 시 예쁜 수료증!</p>
+                    <div class="mt-4 text-orange-500 text-xl">📋 89개</div>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="achievementClick('선물')">
+                    <div class="text-6xl mb-4">🎁</div>
+                    <h3 class="font-bold text-2xl text-purple-600 mb-2">깜짝 선물</h3>
+                    <p class="text-lg text-gray-600">특별한 날의 놀라운 선물!</p>
+                    <div class="mt-4 text-orange-500 text-xl">🎊 23개</div>
+                </div>
+            </div>
+            
+            <!-- 성과 통계 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="happy-card rounded-3xl p-10 text-center wiggle">
+                    <div class="text-7xl mb-6">😊</div>
+                    <h3 class="text-4xl font-bold rainbow-text mb-4">98%</h3>
+                    <p class="text-2xl text-purple-600 font-bold">행복한 친구들</p>
+                    <p class="text-lg text-gray-600 mt-4">매일 즐겁게 학습하는 친구들</p>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-10 text-center bounce-happy">
+                    <div class="text-7xl mb-6">📈</div>
+                    <h3 class="text-4xl font-bold rainbow-text mb-4">85%</h3>
+                    <p class="text-2xl text-purple-600 font-bold">실력 향상</p>
+                    <p class="text-lg text-gray-600 mt-4">꾸준한 성장을 보이는 친구들</p>
+                </div>
+                
+                <div class="happy-card rounded-3xl p-10 text-center heartbeat">
+                    <div class="text-7xl mb-6">💝</div>
+                    <h3 class="text-4xl font-bold rainbow-text mb-4">100%</h3>
+                    <p class="text-2xl text-purple-600 font-bold">선생님 만족</p>
+                    <p class="text-lg text-gray-600 mt-4">모든 선생님들의 높은 만족도</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 시작하기 섹션 -->
+    <section class="py-24 rainbow-gradient">
+        <div class="container mx-auto px-6">
+            <div class="text-center text-white scroll-animate">
+                <h2 class="text-6xl font-bold mb-8 bounce-happy">
+                    🌟 지금 바로 시작해요! 🌟
+                </h2>
+                <p class="text-3xl mb-12 max-w-4xl mx-auto leading-relaxed">
+                    모든 친구들이 행복하게 배우고 성장할 수 있는<br>
+                    <strong>✨ 특별한 학습 여행 ✨</strong>이 기다리고 있어요!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-8 justify-center">
+                    <button class="big-happy-btn heartbeat" onclick="startLearning()" style="background: linear-gradient(45deg, #ff6b6b, #feca57); font-size: 28px; padding: 25px 50px;">
+                        🎊 학습 시작하기 🎊
+                    </button>
+                    <button class="big-happy-btn rainbow-float" onclick="showDemo()" style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); font-size: 28px; padding: 25px 50px;">
+                        🎮 체험해보기 🎮
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-4 mb-8">
+                    <div class="w-16 h-16 rainbow-gradient rounded-full flex items-center justify-center bounce-happy">
+                        <span class="text-3xl">🌈</span>
+                    </div>
+                    <div>
+                        <span class="font-bold text-3xl">해피 러닝</span>
+                        <div class="text-purple-200 text-lg">✨ 모든 친구들의 행복한 학습 친구 ✨</div>
+                    </div>
+                </div>
+                
+                <p class="text-2xl mb-8 text-purple-100">
+                    📞 문의: 02-2226-4279 | 📧 kmetastudy@gmail.com
+                </p>
+                
+                <div class="text-lg text-purple-200">
+                    <p>&copy; 2025 해피 러닝. 모든 친구들의 꿈을 응원합니다. 💝</p>
+                    <p class="mt-2">특별한 도움이 필요한 모든 친구들을 위한 맞춤형 학습 플랫폼</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 축하 이벤트 요소들 -->
+    <div id="celebration-container" class="fixed inset-0 pointer-events-none z-40"></div>
+
+    <script>
+        // 축하 이벤트 함수
+        function showCelebration() {
+            const container = document.getElementById('celebration-container');
+            const emojis = ['🎉', '🎊', '⭐', '💖', '🌟', '✨', '🏆', '🎁', '💝', '🌈'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'celebration-particle';
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * 100 + '%';
+                    emoji.style.animationDelay = Math.random() * 2 + 's';
+                    container.appendChild(emoji);
+                    
+                    setTimeout(() => {
+                        container.removeChild(emoji);
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+
+        // 성공 이벤트 함수
+        function showSuccessEvent() {
+            showCelebration();
+            
+            // 성공 메시지 표시
+            const message = document.createElement('div');
+            message.innerHTML = '🎊 와! 정말 잘했어요! 🎊';
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                color: white;
+                padding: 30px 60px;
+                border-radius: 25px;
+                font-size: 36px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: bounce-happy 1s ease-in-out 3;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 3000);
+        }
+
+        // 과목 클릭 이벤트
+        function subjectClick(subject) {
+            showCelebration();
+            alert(`🎯 ${subject} 학습을 시작할까요? 정말 재미있을 거예요! 🎉`);
+        }
+
+        // 기능 클릭 이벤트
+        function featureClick(feature) {
+            showCelebration();
+            alert(`✨ ${feature} 기능이 정말 멋지죠? 더 자세히 알아볼까요? 🌟`);
+        }
+
+        // 성취 클릭 이벤트
+        function achievementClick(achievement) {
+            showCelebration();
+            alert(`🏆 ${achievement} 보상이 정말 특별해요! 열심히 하면 더 많이 받을 수 있어요! 💝`);
+        }
+
+        // 학습 시작 함수
+        function startLearning() {
+            showSuccessEvent();
+            setTimeout(() => {
+                alert('🎊 환영해요! 함께 즐거운 학습 여행을 시작해봐요! 🌈');
+            }, 1000);
+        }
+
+        // 체험 함수
+        function showDemo() {
+            showCelebration();
+            alert('🎮 체험하기를 클릭해주셔서 감사해요! 정말 재미있는 학습이 기다리고 있어요! ✨');
+        }
+
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 랜덤 축하 이벤트 (주기적으로)
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% 확률
+                showCelebration();
+            }
+        }, 10000);
+
+        // 페이지 로드시 환영 메시지
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showCelebration();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

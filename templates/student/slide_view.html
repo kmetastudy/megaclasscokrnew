@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ slide.content.title }} - 학습 관리 시스템</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/student/student.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+    {% block extra_css %}
+    <!-- 위에서 제공한 OX 퀴즈 CSS 전체 내용을 여기에 붙여넣기 -->
+    <link rel="stylesheet" href="/static/css/student/slides/ox.css">
+    <link rel="stylesheet" href="/static/css/student/slides/selection.css">
+    <link rel="stylesheet" href="/static/css/student/slides/choice.css">
+    <link rel="stylesheet" href="/static/css/student/slides/drag.css">
+    <link rel="stylesheet" href="/static/css/student/slides/line.css">
+    <style>
+        /* Multi-choice 정답/오답 상태 스타일 */
+        .answer.multi-choice.border-green-500 {
+            transition: all 0.3s ease;
+        }
+        .answer.multi-choice.border-red-500 {
+            transition: all 0.3s ease;
+        }
+        .answer.multi-choice.cursor-not-allowed {
+            pointer-events: none;
+        }
+
+        /* Selection 퀴즈 추가 스타일 */
+        .selection-quiz-container .quiz-container,
+        .selection-quiz-container .options-container {
+            display: none !important;
+        }
+
+        /* Multi-choice 정답/오답 상태 스타일 */
+        .answer.multi-choice.border-green-500 {
+            transition: all 0.3s ease;
+        }
+        .answer.multi-choice.border-red-500 {
+            transition: all 0.3s ease;
+        }
+        .answer.multi-choice.cursor-not-allowed {
+            pointer-events: none;
+        }
+    
+        /* Selection 퀴즈 추가 스타일 */
+        .selection-quiz-container .quiz-container,
+        .selection-quiz-container .options-container {
+            display: none !important;
+        }
+        
+        /* ★★★ 드래그 퀴즈 수정 스타일 ★★★ */
+        .drag-quiz-container .quiz-container .options-container,
+        .drag-quiz-container .quiz-container .option-button,
+        .drag-quiz-container .quiz-container .choice.answer {
+            display: none !important;
+        }
+    
+        /* 드래그 퀴즈의 question-box는 보이도록 유지 */
+        .drag-quiz-container .question-box,
+        .drag-quiz-container #question-text {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        /* 드래그 퀴즈 내부의 문제 텍스트만 보이게 */
+        .drag-quiz-container .question-box .quiz-container .question-text,
+        .drag-quiz-container .question-box .quiz-container h1 {
+            display: block !important;
+        }
+    </style>
+    
+    {% endblock %}
+
+   
+</head>
+<body class="bg-slate-50">
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+    
+    {% include 'student/pages/nav.html' %}
+
+    <div class="main-content min-h-screen">
+        <!-- 헤더 부분 -->
+        {% include 'student/slides/components/header.html' %}
+        
+        <main class="max-w-4xl mx-auto px-6 py-2">
+            <div class="content-card bg-white rounded-2xl shadow-lg overflow-hidden mb-8 max-w-4xl flex flex-col justify-start items-center">
+                
+                <!-- 슬라이드 타이틀 부분 -->
+                {% include 'student/slides/components/slide_title.html' %}
+                
+                <div class="px-4 sm:px-6 lg:px-8 py-2 sm:py-2 w-full">
+                    <div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none mx-auto relative">
+
+                        <!-- 문항 유형별 컨텐츠 렌더링 -->
+                        {% if slide.content_type.type_name == 'take-action' %}
+                            {% include 'student/slides/take_action.html' %}
+                        {% elif slide.content_type.type_name == 'rolling' %}
+                            {% include 'student/slides/rolling.html' %}
+                        {% elif slide.content_type.type_name == 'multiple-choice' %}
+                            {% include 'student/slides/multiple_choice.html' %}
+                        {% elif slide.content_type.type_name == 'multi-choice' %}
+                            {% include 'student/slides/multi_choice.html' %}
+                        {% elif slide.content_type.type_name == 'short-answer' %}
+                            {% include 'student/slides/short_answer.html' %}
+                        {% elif slide.content_type.type_name == 'multi-input' %}
+                            {% include 'student/slides/multi_input.html' %}
+                        {% elif slide.content_type.type_name == 'one_shot_submit' %}
+                            {% include 'student/slides/one_shot_submit.html' %}
+                        {% elif slide.content_type.type_name == 'physical_record' %}
+                            {% include 'student/slides/physical_record.html' %}
+                        {% elif slide.content_type.type_name == 'ordering' %}
+                            {% include 'student/slides/ordering.html' %}
+                        {% elif slide.content_type.type_name == 'ox-quiz' %}
+                            {% include 'student/slides/ox_quiz.html' %}
+                        {% elif slide.content_type.type_name == 'selection' %}
+                            {% include 'student/slides/selection_quiz.html' %}
+                        {% elif slide.content_type.type_name == 'choice' %}
+                            {% include 'student/slides/choice_quiz.html' %}
+                        {% elif slide.content_type.type_name == 'drag' %}
+                            {% include 'student/slides/drag_quiz.html' %}
+                        {% elif slide.content_type.type_name == 'line_matching' %}
+                            {% include 'student/slides/line_quiz.html' %}
+                        
+                        {% else %}
+                            {% include 'student/slides/default_content.html' %}
+                        {% endif %}
+
+                        <!-- 결과 GIF 표시 영역 -->
+                        {% include 'student/slides/components/result_gifs.html' %}
+                    </div>
+                    
+                    <!-- 제출 버튼 영역 -->
+                    {% include 'student/slides/components/submission_area.html' %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    {% include 'student/slides/components/bottom_navigation.html' %}
+
+    <!-- 노트 팝업 -->
+    {% include 'student/slides/components/note_popup.html' %}
+
+    <!-- 토스트 컨테이너 -->
+    <div id="toastContainer"></div>
+
+    <!-- 공통 JavaScript -->
+    {% include 'student/slides/scripts/common.html' %}
+    
+    <!-- 문항 유형별 JavaScript -->
+    {% if slide.content_type.type_name in 'multiple-choice,multi-choice,short-answer,ox-quiz,selection,drag,line_matching' %}
+        {% include 'student/slides/scripts/choice_questions.html' %}
+       <!-- 각 타입별 전용 스크립트 -->
+        {% if slide.content_type.type_name == 'ox-quiz' %}
+        {% include 'student/slides/scripts/ox_quiz.html' %}
+        {% elif slide.content_type.type_name == 'selection' %}
+            {% include 'student/slides/scripts/selection_quiz.html' %}
+        {% elif slide.content_type.type_name == 'choice' %}
+            {% include 'student/slides/scripts/choice_quiz.html' %}
+        {% elif slide.content_type.type_name == 'drag' %}
+            {% include 'student/slides/scripts/drag_quiz.html' %}
+         {% elif slide.content_type.type_name == 'line_matching' %}
+            {% include 'student/slides/scripts/line_quiz.html' %}
+        {% endif %}
+    {% elif slide.content_type.type_name == 'multi-input' %}
+        {% include 'student/slides/scripts/multi_input.html' %}
+    {% elif slide.content_type.type_name == 'one_shot_submit' %}
+        {% include 'student/slides/scripts/one_shot_submit.html' %}
+    {% elif slide.content_type.type_name == 'physical_record' %}
+        {% include 'student/slides/scripts/physical_record.html' %}
+    {% elif slide.content_type.type_name == 'ordering' %}
+        {% include 'student/slides/scripts/ordering.html' %}
+    {% endif %}
+    <!-- JavaScript 부분에 drag 추가 -->
+   
+</body>
+</html>
