@@ -95,6 +95,7 @@ def statistics_by_class_view(request):
     selected_class = None
     class_stats = None
     student_stats = []
+    chart_student_stats = []
     
     if selected_class_id:
         try:
@@ -197,6 +198,18 @@ def statistics_by_class_view(request):
             class_stats['top_performers'] = [s for s in student_stats if s['accuracy_rate'] >= 80][:3]
             class_stats['need_support'] = [s for s in student_stats if s['accuracy_rate'] < 60 and s['total_submissions'] > 0]
             class_stats['inactive_students'] = [s for s in student_stats if not s['is_active']]
+            class_stats['active_students'] = len([s for s in student_stats if s['is_active']])
+            
+            # 차트용 JSON 직렬화 가능한 데이터 준비
+            chart_student_stats = []
+            for student_stat in student_stats:
+                chart_student_stats.append({
+                    'accuracy_rate': student_stat['accuracy_rate'],
+                    'total_submissions': student_stat['total_submissions'],
+                    'is_active': student_stat['is_active'],
+                    'completion_rate': student_stat['completion_rate'],
+                    'needs_attention': student_stat['needs_attention'],
+                })
             
         except Class.DoesNotExist:
             messages.error(request, "선택한 학급을 찾을 수 없습니다.")
@@ -206,6 +219,7 @@ def statistics_by_class_view(request):
         'selected_class': selected_class,
         'class_stats': class_stats,
         'student_stats': student_stats,
+        'chart_student_stats': json.dumps(chart_student_stats) if selected_class else '[]',
     }
     
     return render(request, 'teacher/statistics/by_class.html', context)

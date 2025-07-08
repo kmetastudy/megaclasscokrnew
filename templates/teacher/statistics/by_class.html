@@ -183,7 +183,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">활동 중인 학생</span>
-                        <span class="font-semibold">{{ student_stats|length|add:"-"|add:class_stats.inactive_students|length }}명</span>
+                        <span class="font-semibold">{{ class_stats.active_students }}명</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">비활동 학생</span>
@@ -355,7 +355,7 @@
 <script>
 // 차트 데이터 준비
 {% if selected_class and class_stats %}
-const studentStats = {{ student_stats|safe }};
+const studentStats = {{ chart_student_stats|safe }};
 
 // 성취 분포 차트
 const distributionCtx = document.getElementById('achievementDistribution').getContext('2d');
