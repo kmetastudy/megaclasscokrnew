@@ -10,6 +10,7 @@ import json
 from collections import defaultdict
 from .decorators import teacher_required
 from .models import Course, Chapter, SubChapter, Chasi, ChasiSlide, CourseAssignment,ContentType
+from .utils import get_teacher_accessible_courses
 from accounts.models import Teacher, Class, Student
 from student.models import StudentAnswer, StudentProgress, StudentPhysicalResult
 from rolling.models import RollingAttempt, RollingEvaluation
@@ -23,26 +24,40 @@ def statistics_dashboard_view(request):
     """통계 대시보드 메인"""
     teacher = request.user.teacher
     
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
+    # 교사가 담당하는 학급의 학생들만 (통계 범위 제한)
+    teacher_students = Student.objects.filter(school_class__teachers=teacher)
+    
     # 기본 통계
     stats = {
         'total_classes': Class.objects.filter(teachers=teacher).count(),
-        'total_students': Student.objects.filter(school_class__teachers=teacher).distinct().count(),
-        'total_courses': Course.objects.filter(teacher=teacher).count(),
+        'total_students': teacher_students.distinct().count(),
+        'total_courses': accessible_courses.count(),
         'total_submissions': StudentAnswer.objects.filter(
-            slide__chasi__subject__teacher=teacher
+            slide__chasi__subject__in=accessible_courses,
+            student__in=teacher_students
         ).count() if 'StudentAnswer' in globals() else 0,
     }
     
-    # 최근 7일간 제출 추이
-    week_ago = timezone.now() - timedelta(days=7)
+    # 최근 7일간 제출 추이 (오늘 포함)
+    days_ago = 6  # 6일 전부터 시작해서 오늘까지 7일
+    start_date = timezone.now() - timedelta(days=days_ago)
     daily_submissions = []
     
     if 'StudentAnswer' in globals():
         for i in range(7):
-            date = week_ago + timedelta(days=i)
+            date = start_date + timedelta(days=i)
+            # 시간대 문제를 피하기 위해 날짜 범위로 필터링
+            start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = start_of_day + timedelta(days=1)
+            
             count = StudentAnswer.objects.filter(
-                slide__chasi__subject__teacher=teacher,
-                submitted_at__date=date.date()
+                slide__chasi__subject__in=accessible_courses,
+                student__in=teacher_students,
+                submitted_at__gte=start_of_day,
+                submitted_at__lt=end_of_day
             ).count()
             daily_submissions.append({
                 'date': date.strftime('%m/%d'),
@@ -51,7 +66,7 @@ def statistics_dashboard_view(request):
     else:
         # 더미 데이터
         for i in range(7):
-            date = week_ago + timedelta(days=i)
+            date = start_date + timedelta(days=i)
             daily_submissions.append({
                 'date': date.strftime('%m/%d'),
                 'count': 0
@@ -70,12 +85,17 @@ def statistics_dashboard_view(request):
 def statistics_by_class_view(request):
     """반별 통계 - 실제 데이터 사용 버전"""
     teacher = request.user.teacher
+    
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
     classes = Class.objects.filter(teachers=teacher).order_by('name')
     
     selected_class_id = request.GET.get('class_id')
     selected_class = None
     class_stats = None
     student_stats = []
+    chart_student_stats = []
     
     if selected_class_id:
         try:
@@ -85,18 +105,20 @@ def statistics_by_class_view(request):
             students = Student.objects.filter(school_class=selected_class)
             total_students = students.count()
             
-            # 과제 통계 - 학급 또는 개별 학생에게 할당된 모든 과제
+            # 과제 통계 - 학급 또는 개별 학생에게 할당된 모든 과제 (접근 가능한 코스만)
             assignments = CourseAssignment.objects.filter(
                 Q(assigned_class=selected_class) | 
-                Q(assigned_student__school_class=selected_class)
+                Q(assigned_student__school_class=selected_class),
+                course__in=accessible_courses
             ).distinct()
             
             total_assignments = assignments.count()
             completed_assignments = assignments.filter(is_completed=True).count()
             
-            # 전체 답안 제출 통계
+            # 전체 답안 제출 통계 (접근 가능한 코스만)
             all_submissions = StudentAnswer.objects.filter(
-                student__school_class=selected_class
+                student__school_class=selected_class,
+                slide__chasi__subject__in=accessible_courses
             )
             
             total_submissions = all_submissions.count()
@@ -122,14 +144,18 @@ def statistics_by_class_view(request):
             
             # 학생별 상세 통계
             for student in students:
-                # 개별 학생의 답안 제출 통계
-                student_submissions = StudentAnswer.objects.filter(student=student)
+                # 개별 학생의 답안 제출 통계 (접근 가능한 코스만)
+                student_submissions = StudentAnswer.objects.filter(
+                    student=student,
+                    slide__chasi__subject__in=accessible_courses
+                )
                 total_answers = student_submissions.count()
                 correct_answers = student_submissions.filter(is_correct=True).count()
                 
-                # 학생의 과제 완료율
+                # 학생의 과제 완료율 (접근 가능한 코스만)
                 student_assignments = CourseAssignment.objects.filter(
-                    Q(assigned_class=selected_class) | Q(assigned_student=student)
+                    Q(assigned_class=selected_class) | Q(assigned_student=student),
+                    course__in=accessible_courses
                 ).distinct()
                 student_completed = student_assignments.filter(is_completed=True).count()
                 
@@ -172,6 +198,18 @@ def statistics_by_class_view(request):
             class_stats['top_performers'] = [s for s in student_stats if s['accuracy_rate'] >= 80][:3]
             class_stats['need_support'] = [s for s in student_stats if s['accuracy_rate'] < 60 and s['total_submissions'] > 0]
             class_stats['inactive_students'] = [s for s in student_stats if not s['is_active']]
+            class_stats['active_students'] = len([s for s in student_stats if s['is_active']])
+            
+            # 차트용 JSON 직렬화 가능한 데이터 준비
+            chart_student_stats = []
+            for student_stat in student_stats:
+                chart_student_stats.append({
+                    'accuracy_rate': student_stat['accuracy_rate'],
+                    'total_submissions': student_stat['total_submissions'],
+                    'is_active': student_stat['is_active'],
+                    'completion_rate': student_stat['completion_rate'],
+                    'needs_attention': student_stat['needs_attention'],
+                })
             
         except Class.DoesNotExist:
             messages.error(request, "선택한 학급을 찾을 수 없습니다.")
@@ -181,6 +219,7 @@ def statistics_by_class_view(request):
         'selected_class': selected_class,
         'class_stats': class_stats,
         'student_stats': student_stats,
+        'chart_student_stats': json.dumps(chart_student_stats) if selected_class else '[]',
     }
     
     return render(request, 'teacher/statistics/by_class.html', context)
@@ -267,7 +306,13 @@ def statistics_by_class_view_0617(request):
 def statistics_by_course_view(request):
     """코스별 통계"""
     teacher = request.user.teacher
-    courses = Course.objects.filter(teacher=teacher).order_by('subject_name')
+    
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    courses = accessible_courses.order_by('subject_name')
+    
+    # 교사가 담당하는 학급의 학생들만 (통계 범위 제한)
+    teacher_students = Student.objects.filter(school_class__teachers=teacher)
     
     selected_course_id = request.GET.get('course_id')
     selected_course = None
@@ -276,16 +321,17 @@ def statistics_by_course_view(request):
     
     if selected_course_id:
         try:
-            selected_course = Course.objects.get(id=selected_course_id, teacher=teacher)
+            selected_course = accessible_courses.get(id=selected_course_id)
             
             # 코스 전체 통계
             total_chasis = Chasi.objects.filter(subject=selected_course).count()
             published_chasis = Chasi.objects.filter(subject=selected_course, is_published=True).count()
             
-            # 학습 진도
+            # 학습 진도 (교사의 학생들만)
             total_slides = ChasiSlide.objects.filter(chasi__subject=selected_course).count()
             viewed_slides = StudentAnswer.objects.filter(
-                slide__chasi__subject=selected_course
+                slide__chasi__subject=selected_course,
+                student__in=teacher_students
             ).values('slide').distinct().count()
             
             course_stats = {
@@ -303,8 +349,11 @@ def statistics_by_course_view(request):
                 slides = ChasiSlide.objects.filter(chasi=chasi)
                 total_slide_count = slides.count()
                 
-                # 제출 통계
-                submissions = StudentAnswer.objects.filter(slide__chasi=chasi)
+                # 제출 통계 (교사의 학생들만)
+                submissions = StudentAnswer.objects.filter(
+                    slide__chasi=chasi,
+                    student__in=teacher_students
+                )
                 submission_count = submissions.count()
                 correct_count = submissions.filter(is_correct=True).count()
                 
@@ -334,15 +383,22 @@ def submission_analysis_view(request):
     """제출 답안 분석"""
     teacher = request.user.teacher
     
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
+    # 교사가 담당하는 학급의 학생들만 (통계 범위 제한)
+    teacher_students = Student.objects.filter(school_class__teachers=teacher)
+    
     # 필터 옵션
     filter_type = request.GET.get('filter', 'all')  # all, class, course, student
     filter_id = request.GET.get('filter_id')
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
     
-    # 기본 쿼리셋
+    # 기본 쿼리셋 (접근 가능한 코스 + 교사의 학생들만)
     submissions = StudentAnswer.objects.filter(
-        slide__chasi__subject__teacher=teacher
+        slide__chasi__subject__in=accessible_courses,
+        student__in=teacher_students
     ).select_related('student__user', 'student__school_class', 'slide__chasi__subject')
     
     # 필터 적용
@@ -370,7 +426,7 @@ def submission_analysis_view(request):
     
     # 필터 옵션 목록
     classes = Class.objects.filter(teachers=teacher)
-    courses = Course.objects.filter(teacher=teacher)
+    courses = get_teacher_accessible_courses(teacher)
     students = Student.objects.filter(school_class__teachers=teacher).distinct()
     
     context = {
@@ -392,6 +448,9 @@ def weakness_analysis_view(request):
     """취약점 및 강점 분석"""
     teacher = request.user.teacher
     
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
     analysis_type = request.GET.get('type', 'class')  # class, student
     target_id = request.GET.get('id')
     
@@ -403,9 +462,10 @@ def weakness_analysis_view(request):
         try:
             target_class = Class.objects.get(id=target_id, teachers=teacher)
             
-            # 콘텐츠 타입별 정답률 분석
+            # 콘텐츠 타입별 정답률 분석 (접근 가능한 코스만)
             content_stats = StudentAnswer.objects.filter(
-                student__school_class=target_class
+                student__school_class=target_class,
+                slide__chasi__subject__in=accessible_courses
             ).values('slide__content_type__type_name').annotate(
                 total=Count('id'),
                 correct=Count('id', filter=Q(is_correct=True))
@@ -426,9 +486,10 @@ def weakness_analysis_view(request):
                         'total': stat['total']
                     })
             
-            # 자주 틀리는 문제
+            # 자주 틀리는 문제 (접근 가능한 코스만)
             error_questions = StudentAnswer.objects.filter(
                 student__school_class=target_class,
+                slide__chasi__subject__in=accessible_courses,
                 is_correct=False
             ).values('slide__content__title', 'slide_id').annotate(
                 error_count=Count('id')
@@ -810,6 +871,13 @@ def physical_records_view(request):
 def api_statistics_summary(request):
     """통계 요약 API"""
     teacher = request.user.teacher
+    
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
+    # 교사가 담당하는 학급의 학생들만 (통계 범위 제한)
+    teacher_students = Student.objects.filter(school_class__teachers=teacher)
+    
     period = request.GET.get('period', 'week')  # week, month, all
     
     # 기간 설정
@@ -820,9 +888,10 @@ def api_statistics_summary(request):
     else:
         start_date = None
     
-    # 기본 쿼리
+    # 기본 쿼리 (접근 가능한 코스 + 교사의 학생들만)
     submissions = StudentAnswer.objects.filter(
-        slide__chasi__subject__teacher=teacher
+        slide__chasi__subject__in=accessible_courses,
+        student__in=teacher_students
     )
     
     if start_date:

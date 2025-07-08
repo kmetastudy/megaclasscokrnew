@@ -1,6 +1,6 @@
 from django.db.models import Count, Max, Sum
 from .models import Course, Chapter, SubChapter, Chasi, ChasiSlide, CourseAssignment
-from accounts.models import Student,Class
+from accounts.models import Student, Class, Teacher
 
 def get_next_order(model, parent_field=None, parent_id=None, order_field=None):
     """다음 순서 번호를 반환하는 유틸리티 함수"""
@@ -30,6 +30,22 @@ def get_next_order(model, parent_field=None, parent_id=None, order_field=None):
     max_order = last_obj.get('max_order')
     
     return (max_order or 0) + 1
+
+def get_teacher_accessible_courses(teacher):
+    """교사가 접근 가능한 코스들을 반환하는 함수 (소유 + 할당된 코스)"""
+    from django.db.models import Q
+    
+    # 교사가 담당하는 학급에 할당된 코스 ID들
+    assigned_course_ids = CourseAssignment.objects.filter(
+        assigned_class__teachers=teacher
+    ).values_list('course_id', flat=True).distinct()
+    
+    # Q 객체를 사용해서 한 번의 쿼리로 두 조건을 만족하는 코스들을 가져옴
+    accessible_courses = Course.objects.filter(
+        Q(teacher=teacher) | Q(id__in=assigned_course_ids)
+    ).distinct()
+    
+    return accessible_courses
 
 def get_course_statistics(course):
     """코스 통계 정보를 반환하는 함수"""
@@ -611,9 +627,10 @@ def get_teacher_dashboard_stats(teacher):
     total_students = Student.objects.filter(school_class__in=teacher_classes).distinct().count()
     total_classes_count = teacher_classes.count()
     
-    # 전체 코스 및 할당 수
-    total_courses = Course.objects.filter(teacher=teacher).count()
-    total_assignments = CourseAssignment.objects.filter(course__teacher=teacher).count()
+    # 전체 코스 및 할당 수 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    total_courses = accessible_courses.count()
+    total_assignments = CourseAssignment.objects.filter(course__in=accessible_courses).count()
     
     return {
         'total_courses': total_courses,
