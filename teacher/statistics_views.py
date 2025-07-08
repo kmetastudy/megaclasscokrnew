@@ -41,17 +41,23 @@ def statistics_dashboard_view(request):
         ).count() if 'StudentAnswer' in globals() else 0,
     }
     
-    # 최근 7일간 제출 추이
-    week_ago = timezone.now() - timedelta(days=7)
+    # 최근 7일간 제출 추이 (오늘 포함)
+    days_ago = 6  # 6일 전부터 시작해서 오늘까지 7일
+    start_date = timezone.now() - timedelta(days=days_ago)
     daily_submissions = []
     
     if 'StudentAnswer' in globals():
         for i in range(7):
-            date = week_ago + timedelta(days=i)
+            date = start_date + timedelta(days=i)
+            # 시간대 문제를 피하기 위해 날짜 범위로 필터링
+            start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = start_of_day + timedelta(days=1)
+            
             count = StudentAnswer.objects.filter(
                 slide__chasi__subject__in=accessible_courses,
                 student__in=teacher_students,
-                submitted_at__date=date.date()
+                submitted_at__gte=start_of_day,
+                submitted_at__lt=end_of_day
             ).count()
             daily_submissions.append({
                 'date': date.strftime('%m/%d'),
@@ -60,7 +66,7 @@ def statistics_dashboard_view(request):
     else:
         # 더미 데이터
         for i in range(7):
-            date = week_ago + timedelta(days=i)
+            date = start_date + timedelta(days=i)
             daily_submissions.append({
                 'date': date.strftime('%m/%d'),
                 'count': 0
