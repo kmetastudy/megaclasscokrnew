@@ -22,7 +22,7 @@ from .forms import (
     ChasiSlideForm,  ContentsForm
 )
 from .decorators import teacher_required
-from .utils import get_course_statistics, get_course_progress
+from .utils import get_course_statistics, get_course_progress, get_teacher_accessible_courses
 from django.db.models import Prefetch
 
 # ========================================
@@ -36,7 +36,7 @@ def course_list_view(request):
     
     # 검색 기능
     search_query = request.GET.get('search', '')
-    courses = Course.objects.filter(teacher=teacher)
+    courses = get_teacher_accessible_courses(teacher)
     
     # 디버깅을 위한 로그
     print(f"교사: {teacher}, 코스 수: {courses.count()}")
@@ -148,7 +148,8 @@ def course_create_view(request):
 def course_detail_view(request, course_id):
     """코스 상세 정보"""
     teacher = request.user.teacher
-    course = get_object_or_404(Course, id=course_id, teacher=teacher)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    course = get_object_or_404(accessible_courses, id=course_id)
     
     # Prefetch를 사용하여 관련 데이터를 미리 로드
     chapters = Chapter.objects.filter(subject=course).prefetch_related(
@@ -1403,7 +1404,8 @@ def bulk_chapter_create_view(request, course_id):
 def api_course_structure(request, course_id):
     """코스 구조 API - 수정된 버전"""
     teacher = request.user.teacher
-    course = get_object_or_404(Course, id=course_id, teacher=teacher)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    course = get_object_or_404(accessible_courses, id=course_id)
     
     try:
         structure = {
@@ -1604,7 +1606,8 @@ def course_detail_onepage_view(request, course_id):
 def api_course_detail(request, course_id):
     """코스 상세 정보 API"""
     teacher = request.user.teacher
-    course = get_object_or_404(Course, id=course_id, teacher=teacher)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    course = get_object_or_404(accessible_courses, id=course_id)
     
     data = {
         'id': course.id,

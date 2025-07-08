@@ -21,7 +21,7 @@ from .models import Course, CourseAssignment,Contents
 from accounts.models import Teacher, Class, Student,ClassTeacher
 from .forms import StudentCreateForm, ClassCreateForm
 from .decorators import teacher_required
-from .utils import get_teacher_dashboard_stats
+from .utils import get_teacher_dashboard_stats, get_teacher_accessible_courses
 
 from .contents_views import *
 from .chasi_views import *
@@ -45,6 +45,14 @@ def dashboard_view(request):
     # 기본 통계 데이터
     stats = get_teacher_dashboard_stats(teacher)
     
+    # 교사가 접근 가능한 모든 코스 (소유 + 할당된 코스)
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    
+    # 교사가 담당하는 학급의 학생들만 (통계 범위 제한)
+    teacher_students = Student.objects.filter(
+        school_class__teachers=teacher
+    )
+    
     # 현재 시간 기준
     now = timezone.now()
     one_week_ago = now - timedelta(days=7)
@@ -53,7 +61,8 @@ def dashboard_view(request):
     # 제출 답안 통계 (누적, 월간, 주간)
     try:
         all_submissions = StudentAnswer.objects.filter(
-            slide__chasi__subject__teacher=teacher
+            slide__chasi__subject__in=accessible_courses,
+            student__in=teacher_students
         )
         
         stats['total_submissions'] = all_submissions.count()
@@ -67,10 +76,8 @@ def dashboard_view(request):
         # 정답률, 오답률, 미제출률 계산
         total_assigned_problems = ChasiSlide.objects.filter(
             chasi__subject__assignments__isnull=False,
-            chasi__subject__teacher=teacher
-        ).count() * Student.objects.filter(
-            school_class__teachers=teacher
-        ).count()
+            chasi__subject__in=accessible_courses
+        ).count() * teacher_students.count()
         
         if total_assigned_problems > 0:
             correct_count = all_submissions.filter(is_correct=True).count()
@@ -113,7 +120,8 @@ def dashboard_view(request):
     for class_obj in classes_with_stats:
         try:
             class_submissions = StudentAnswer.objects.filter(
-                student__school_class=class_obj
+                student__school_class=class_obj,
+                slide__chasi__subject__in=accessible_courses
             )
             if class_submissions.exists():
                 class_correct = class_submissions.filter(is_correct=True).count()
@@ -127,7 +135,7 @@ def dashboard_view(request):
     stats['avg_class_achievement'] = round(total_achievement / class_count, 1) if class_count > 0 else 0
     
     # 전체 코스별 평균 진도율
-    courses = Course.objects.filter(teacher=teacher)
+    courses = accessible_courses
     total_progress = 0
     course_count = 0
     
@@ -135,7 +143,8 @@ def dashboard_view(request):
         total_slides = ChasiSlide.objects.filter(chasi__subject=course).count()
         if total_slides > 0:
             completed_slides = StudentAnswer.objects.filter(
-                slide__chasi__subject=course
+                slide__chasi__subject=course,
+                student__in=teacher_students
             ).values('slide').distinct().count()
             progress = (completed_slides / total_slides * 100)
             total_progress += progress
@@ -144,7 +153,7 @@ def dashboard_view(request):
     stats['avg_course_progress'] = round(total_progress / course_count, 1) if course_count > 0 else 0
     
     # 최근 데이터들
-    recent_courses = Course.objects.filter(teacher=teacher).order_by('-created_at')[:5]
+    recent_courses = accessible_courses.order_by('-created_at')[:5]
     recent_students = Student.objects.filter(
         school_class__teachers=teacher
     ).select_related('user', 'school_class').order_by('-created_at').distinct()[:5]
@@ -156,7 +165,7 @@ def dashboard_view(request):
     
     # 최근 할당
     recent_assignments = CourseAssignment.objects.filter(
-        course__teacher=teacher
+        course__in=accessible_courses
     ).select_related('course', 'assigned_class', 'assigned_student').order_by('-assigned_at')[:10]
     
     context = {
@@ -166,6 +175,8 @@ def dashboard_view(request):
         'recent_classes': recent_classes,  # 새로 추가
         'recent_assignments': recent_assignments,
     }
+
+    print("stats:", stats)
     
     return render(request, 'teacher/dashboard.html', context)
 
@@ -283,7 +294,7 @@ def course_dashboard_view(request):
     stats = get_teacher_dashboard_stats(teacher)
     
     # 최근 생성된 코스들
-    recent_courses = Course.objects.filter(teacher=teacher).order_by('-created_at')[:5]
+    recent_courses = get_teacher_accessible_courses(teacher).order_by('-created_at')[:5]
     
     # ★★★ [수정] 교사가 속한 학급의 학생들을 가져오도록 변경 ★★★
     recent_students = Student.objects.filter(
@@ -291,8 +302,9 @@ def course_dashboard_view(request):
     ).select_related('user', 'school_class').order_by('-created_at').distinct()[:5]
     
     # 최근 할당
+    accessible_courses = get_teacher_accessible_courses(teacher)
     recent_assignments = CourseAssignment.objects.filter(
-        course__teacher=teacher
+        course__in=accessible_courses
     ).select_related('course', 'assigned_class', 'assigned_student').order_by('-assigned_at')[:10]
     
     context = {
