@@ -296,6 +296,12 @@ def course_dashboard_view(request):
     # 최근 생성된 코스들
     recent_courses = get_teacher_accessible_courses(teacher).order_by('-created_at')[:5]
     
+    # 각 코스에 권한 정보 추가
+    courses_with_permissions = []
+    for course in recent_courses:
+        course.permissions = get_course_permissions(request.user, course)
+        courses_with_permissions.append(course)
+    
     # ★★★ [수정] 교사가 속한 학급의 학생들을 가져오도록 변경 ★★★
     recent_students = Student.objects.filter(
         school_class__teachers=teacher
@@ -309,7 +315,7 @@ def course_dashboard_view(request):
     
     context = {
         'stats': stats,
-        'recent_courses': recent_courses,
+        'recent_courses': courses_with_permissions,
         'recent_students': recent_students,
         'recent_assignments': recent_assignments,
     }

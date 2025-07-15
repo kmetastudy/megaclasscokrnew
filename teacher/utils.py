@@ -832,3 +832,28 @@ def reorder_slides(chasi):
         if slide.slide_number != idx:
             slide.slide_number = idx
             slide.save(update_fields=['slide_number'])
+
+def can_edit_course(user, course):
+    """사용자가 해당 코스를 편집할 권한이 있는지 확인"""
+    if not hasattr(user, 'teacher'):
+        return False
+    return course.teacher == user.teacher
+
+def can_assign_course(user, course):
+    """사용자가 해당 코스를 할당할 권한이 있는지 확인"""
+    return can_edit_course(user, course)
+
+def can_delete_course(user, course):
+    """사용자가 해당 코스를 삭제할 권한이 있는지 확인"""
+    return can_edit_course(user, course)
+
+def get_course_permissions(user, course):
+    """코스에 대한 사용자의 권한 정보를 반환"""
+    can_edit = can_edit_course(user, course)
+    return {
+        'can_view': True,  # 접근 가능한 코스라면 항상 볼 수 있음
+        'can_edit': can_edit,
+        'can_assign': can_edit,
+        'can_delete': can_edit,
+        'is_owner': can_edit
+    }
