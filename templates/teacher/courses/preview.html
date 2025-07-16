@@ -1,0 +1,240 @@
+<!-- teacher/templates/teacher/courses/preview.html -->
+{% extends 'teacher/base.html' %}
+
+{% block title %}{{ course.subject_name }} - 코스 미리보기{% endblock %}
+
+{% block content %}
+<div class="h-screen flex flex-col bg-gray-50">
+    <!-- 헤더 -->
+    <div class="bg-white shadow-sm border-b p-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="{% url 'teacher:course_list' %}" 
+                   class="mr-4 text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">{{ course.subject_name }}</h1>
+                    <p class="text-sm text-gray-600">
+                        <i class="fas fa-search mr-1"></i>미리보기 모드 • {{ course.target }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                <div class="flex items-center">
+                    <i class="fas fa-list-alt mr-1"></i>
+                    <span>{{ stats.total_chasis }}개 차시</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-images mr-1"></i>
+                    <span>{{ stats.total_slides }}개 슬라이드</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 메인 콘텐츠 -->
+    <div class="flex-1 flex overflow-hidden">
+        <!-- 사이드바 (목차) -->
+        <div class="w-80 bg-white shadow-sm border-r overflow-y-auto">
+            <div class="p-4 border-b">
+                <h3 class="font-semibold text-gray-800 mb-2">
+                    <i class="fas fa-sitemap mr-2"></i>코스 목차
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                {% if chapters %}
+                    {% for chapter in chapters %}
+                    <div class="mb-4">
+                        <div class="font-medium text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-folder text-blue-600 mr-2"></i>
+                            {{ chapter.chapter_order }}. {{ chapter.chapter_title }}
+                        </div>
+                        
+                        {% for subchapter in chapter.subchapters.all %}
+                        <div class="ml-4 mb-2">
+                            <div class="text-sm text-gray-700 mb-1 flex items-center">
+                                <i class="fas fa-folder-open text-green-600 mr-2"></i>
+                                {{ subchapter.sub_chapter_order }}. {{ subchapter.sub_chapter_title }}
+                            </div>
+                            
+                            {% for chasi in subchapter.chasis.all %}
+                            <div class="ml-6 mb-1">
+                                <a href="?chasi_id={{ chasi.id }}&slide=1" 
+                                   class="block text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 p-2 rounded transition duration-200 {% if selected_chasi.id == chasi.id %}bg-blue-100 text-blue-700 font-medium{% endif %}">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    {{ chasi.chasi_order }}. {{ chasi.chasi_title }}
+                                    <span class="text-xs text-gray-500 ml-1">
+                                        ({{ chasi.teacher_slides.count }}슬라이드)
+                                    </span>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-list-alt text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">아직 등록된 차시가 없습니다</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 슬라이드 콘텐츠 영역 -->
+        <div class="flex-1 flex flex-col">
+            {% if current_slide %}
+            <!-- 슬라이드 헤더 -->
+            <div class="bg-white border-b p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">
+                            {{ selected_chasi.chasi_title }}
+                        </h2>
+                        <p class="text-sm text-gray-600">
+                            슬라이드 {{ current_slide_number }} / {{ total_slides }}
+                            {% if current_slide.slide_title %}
+                                • {{ current_slide.slide_title }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <!-- 이전 슬라이드 -->
+                        {% if current_slide_number > 1 %}
+                        <a href="?chasi_id={{ selected_chasi.id }}&slide={{ current_slide_number|add:-1 }}" 
+                           class="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 transition duration-200 text-sm">
+                            <i class="fas fa-chevron-left mr-1"></i>이전
+                        </a>
+                        {% endif %}
+                        
+                        <!-- 다음 슬라이드 -->
+                        {% if current_slide_number < total_slides %}
+                        <a href="?chasi_id={{ selected_chasi.id }}&slide={{ current_slide_number|add:1 }}" 
+                           class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition duration-200 text-sm">
+                            다음<i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- 진행률 바 -->
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                         style="width: {% widthratio current_slide_number total_slides 100 %}%"></div>
+                </div>
+            </div>
+            
+            <!-- 슬라이드 내용 -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-md p-8">
+                        <!-- 콘텐츠 타입 표시 -->
+                        <div class="mb-4">
+                            <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-tag mr-1"></i>{{ current_slide.content_type.type_name }}
+                            </span>
+                            {% if current_slide.estimated_time %}
+                            <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm ml-2">
+                                <i class="fas fa-clock mr-1"></i>{{ current_slide.estimated_time }}분
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- 실제 콘텐츠 -->
+                        <div class="prose max-w-none">
+                            {{ current_slide.content.page|safe }}
+                        </div>
+                        
+                        <!-- 강사 노트 (있는 경우) -->
+                        {% if current_slide.instructor_notes %}
+                        <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                            <h4 class="text-sm font-semibold text-yellow-800 mb-2">
+                                <i class="fas fa-sticky-note mr-1"></i>강사 노트
+                            </h4>
+                            <p class="text-sm text-yellow-700">{{ current_slide.instructor_notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% else %}
+            <!-- 슬라이드가 없는 경우 -->
+            <div class="flex-1 flex items-center justify-center bg-gray-50">
+                <div class="text-center">
+                    <i class="fas fa-images text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-600 mb-2">표시할 슬라이드가 없습니다</h3>
+                    {% if selected_chasi %}
+                    <p class="text-gray-500">선택한 차시에 슬라이드가 없습니다.</p>
+                    {% else %}
+                    <p class="text-gray-500">왼쪽 목차에서 차시를 선택해주세요.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* 프로세 스타일 개선 */
+.prose {
+    line-height: 1.6;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.prose p {
+    margin-bottom: 1em;
+}
+
+.prose ol, .prose ul {
+    margin: 1em 0;
+    padding-left: 1.5em;
+}
+
+.prose li {
+    margin-bottom: 0.5em;
+}
+
+.prose input[type="text"], .prose input[type="number"], .prose textarea {
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.prose input[type="radio"], .prose input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 키보드 네비게이션
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) return;
+        
+        const currentSlide = {{ current_slide_number|default:0 }};
+        const totalSlides = {{ total_slides|default:0 }};
+        const chasiId = {{ selected_chasi.id|default:0 }};
+        
+        if (e.key === 'ArrowLeft' && currentSlide > 1) {
+            window.location.href = `?chasi_id=${chasiId}&slide=${currentSlide - 1}`;
+        } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+            window.location.href = `?chasi_id=${chasiId}&slide=${currentSlide + 1}`;
+        }
+    });
+});
+</script>
+{% endblock %}

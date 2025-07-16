@@ -22,7 +22,7 @@ from .forms import (
     ChasiSlideForm,  ContentsForm
 )
 from .decorators import teacher_required
-from .utils import get_course_statistics, get_course_progress, get_teacher_accessible_courses
+from .utils import get_course_statistics, get_course_progress, get_teacher_accessible_courses, get_course_permissions
 from django.db.models import Prefetch
 
 # ========================================
@@ -59,13 +59,15 @@ def course_list_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # 디버깅 정보 추가
-    print(f"페이지 객체 리스트 수: {len(page_obj.object_list)}")
+    # 각 코스에 권한 정보 추가
+    courses_with_permissions = []
     for course in page_obj.object_list:
-        print(f"코스: {course.subject_name}, 대단원: {course.chapter_count}, 할당: {course.assignment_count}")
+        course.permissions = get_course_permissions(request.user, course)
+        courses_with_permissions.append(course)
+        print(f"코스: {course.subject_name}, 대단원: {course.chapter_count}, 할당: {course.assignment_count}, 소유자: {course.permissions['is_owner']}")
     
     context = {
-        'courses': page_obj.object_list,
+        'courses': courses_with_permissions,
         'page_obj': page_obj,
         'search_query': search_query,
         'total_courses': courses.count(),
@@ -1848,3 +1850,80 @@ def api_chapter_subchapters_list(request, chapter_id):
             'success': False,
             'error': str(e)
         }, status=500)
+
+# ========================================
+# 코스 미리보기 뷰
+# ========================================
+
+@login_required
+@teacher_required
+def course_preview_view(request, course_id):
+    """코스 미리보기 - 모든 교사 접근 가능"""
+    teacher = request.user.teacher
+    accessible_courses = get_teacher_accessible_courses(teacher)
+    course = get_object_or_404(accessible_courses, id=course_id)
+    
+    # 전체 코스 구조 로드 (계층적)
+    chapters = Chapter.objects.filter(subject=course).prefetch_related(
+        Prefetch('subchapters', SubChapter.objects.order_by('sub_chapter_order')),
+        Prefetch('subchapters__chasis', Chasi.objects.filter(is_published=True).order_by('chasi_order')),
+        Prefetch('subchapters__chasis__teacher_slides', 
+                ChasiSlide.objects.filter(is_active=True).select_related('content', 'content_type').order_by('slide_number'))
+    ).order_by('chapter_order')
+    
+    # 기본 통계
+    stats = get_course_statistics(course)
+    
+    # 현재 선택된 차시 (URL 파라미터로 받기)
+    selected_chasi_id = request.GET.get('chasi_id')
+    selected_chasi = None
+    selected_slides = []
+    
+    if selected_chasi_id:
+        try:
+            selected_chasi = Chasi.objects.get(
+                id=selected_chasi_id,
+                subject=course,
+                is_published=True
+            )
+            selected_slides = ChasiSlide.objects.filter(
+                chasi=selected_chasi,
+                is_active=True
+            ).select_related('content', 'content_type').order_by('slide_number')
+        except Chasi.DoesNotExist:
+            pass
+    
+    # 첫 번째 차시를 기본으로 선택 (선택된 차시가 없는 경우)
+    if not selected_chasi and chapters.exists():
+        for chapter in chapters:
+            for subchapter in chapter.subchapters.all():
+                if subchapter.chasis.exists():
+                    selected_chasi = subchapter.chasis.first()
+                    selected_slides = selected_chasi.teacher_slides.filter(is_active=True).order_by('slide_number')
+                    break
+            if selected_chasi:
+                break
+    
+    # 현재 슬라이드 번호 (URL 파라미터로 받기)
+    current_slide_number = int(request.GET.get('slide', 1))
+    current_slide = None
+    
+    if selected_slides and 1 <= current_slide_number <= selected_slides.count():
+        current_slide = selected_slides[current_slide_number - 1]
+    elif selected_slides:
+        current_slide = selected_slides.first()
+        current_slide_number = 1
+    
+    context = {
+        'course': course,
+        'chapters': chapters,
+        'stats': stats,
+        'selected_chasi': selected_chasi,
+        'selected_slides': selected_slides,
+        'current_slide': current_slide,
+        'current_slide_number': current_slide_number,
+        'total_slides': selected_slides.count() if selected_slides else 0,
+        'is_preview': True,  # 템플릿에서 미리보기 모드임을 표시
+    }
+    
+    return render(request, 'teacher/courses/preview.html', context)

@@ -65,6 +65,7 @@ urlpatterns = [
     path('courses/<int:course_id>/edit/', courses.course_edit_view, name='course_edit'),
     path('courses/<int:course_id>/delete/', courses.course_delete_view, name='course_delete'),
     path('courses/<int:course_id>/assign/', courses.course_assign_view, name='course_assign'),
+    path('courses/<int:course_id>/preview/', courses.course_preview_view, name='course_preview'),
     path('courses/<int:course_id>/structure/', courses.course_structure_manage_view, name='course_structure_manage'),
     
     # ========================================

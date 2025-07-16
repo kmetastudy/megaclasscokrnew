@@ -127,19 +127,32 @@
                 </div>
                 
                 <!-- 액션 버튼 -->
-                <div class="flex space-x-2">
-                    <a href="{% url 'teacher:course_detail' course.id %}" 
-                       class="flex-1 bg-blue-600 text-white text-center py-2 px-3 rounded-lg hover:bg-blue-700 transition duration-200 text-sm">
-                        <i class="fas fa-eye mr-1"></i>보기
-                    </a>
-                    <a href="{% url 'teacher:chapter_list' course.id %}" 
-                       class="flex-1 bg-green-600 text-white text-center py-2 px-3 rounded-lg hover:bg-green-700 transition duration-200 text-sm">
-                        <i class="fas fa-edit mr-1"></i>편집
-                    </a>
-                    <a href="{% url 'teacher:course_assign' course.id %}" 
-                       class="flex-1 bg-purple-600 text-white text-center py-2 px-3 rounded-lg hover:bg-purple-700 transition duration-200 text-sm">
-                        <i class="fas fa-share mr-1"></i>할당
-                    </a>
+                <div class="space-y-2">
+                    <!-- 미리보기 버튼 (모든 사용자) -->
+                    <div class="flex">
+                        <a href="{% url 'teacher:course_preview' course.id %}" 
+                           class="w-full bg-gray-600 text-white text-center py-2 px-3 rounded-lg hover:bg-gray-700 transition duration-200 text-sm">
+                            <i class="fas fa-search mr-1"></i>미리보기
+                        </a>
+                    </div>
+                    
+                    <!-- 소유자 전용 버튼들 -->
+                    {% if course.permissions.can_edit %}
+                    <div class="flex space-x-2">
+                        <a href="{% url 'teacher:course_detail' course.id %}" 
+                           class="flex-1 bg-blue-600 text-white text-center py-2 px-3 rounded-lg hover:bg-blue-700 transition duration-200 text-sm">
+                            <i class="fas fa-eye mr-1"></i>보기
+                        </a>
+                        <a href="{% url 'teacher:chapter_list' course.id %}" 
+                           class="flex-1 bg-green-600 text-white text-center py-2 px-3 rounded-lg hover:bg-green-700 transition duration-200 text-sm">
+                            <i class="fas fa-edit mr-1"></i>편집
+                        </a>
+                        <a href="{% url 'teacher:course_assign' course.id %}" 
+                           class="flex-1 bg-purple-600 text-white text-center py-2 px-3 rounded-lg hover:bg-purple-700 transition duration-200 text-sm">
+                            <i class="fas fa-share mr-1"></i>할당
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
