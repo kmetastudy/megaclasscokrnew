@@ -88,7 +88,30 @@
 </div>
 
 <!-- NCS 학습 카드 추가 -->
-
+<div class="mb-8">
+    <a href="{% url 'ncs:student_dashboard' %}" class="block bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-6 text-white hover:shadow-lg transition-all">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">NCS 직무기초능력 학습</h2>
+                <p class="text-purple-100">개인별 맞춤 역량 강화 프로그램</p>
+            </div>
+            <div class="text-5xl opacity-20">
+                <i class="fas fa-brain"></i>
+            </div>
+        </div>
+        <div class="mt-4 flex items-center">
+            <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+                취약 역량 분석
+            </span>
+            <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm ml-2">
+                맞춤형 문제
+            </span>
+            <span class="ml-auto text-white">
+                바로가기 <i class="fas fa-arrow-right ml-1"></i>
+            </span>
+        </div>
+    </a>
+</div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- 주간 학습 패턴 -->
