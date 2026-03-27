@@ -533,39 +533,67 @@ def my_records_view_0619(request):
 def course_list_view(request):
     """내 코스 목록"""
     student = request.user.student
-    
+
     assigned_courses = CourseAssignment.objects.filter(
         Q(assigned_class=student.school_class) | Q(assigned_student=student)
     ).select_related('course', 'course__teacher')
-    
+
     # 각 코스별 진도 계산
     course_data = []
+    school_levels = set()
+    targets = set()
+    subjects = set()
+
     for assignment in assigned_courses:
         total_slides = ChasiSlide.objects.filter(
             chasi__sub_chapter__chapter__subject=assignment.course,
         ).count()
-        
+
         completed_slides = StudentProgress.objects.filter(
             student=student,
             slide__chasi__sub_chapter__chapter__subject=assignment.course,
             is_completed=True
         ).count()
-        
+
         progress_percent = 0
         if total_slides > 0:
             progress_percent = int((completed_slides / total_slides) * 100)
-        
+
+        target = assignment.course.target or ''
+        subject = assignment.course.subject_name or ''
+
+        # 학교급 추출
+        school_level = ''
+        if '초' in target:
+            school_level = '초등학교'
+        elif '중' in target:
+            school_level = '중학교'
+        elif '고' in target:
+            school_level = '고등학교'
+
+        if school_level:
+            school_levels.add(school_level)
+        if target:
+            targets.add(target)
+        if subject:
+            subjects.add(subject)
+
         course_data.append({
             'assignment': assignment,
             'total_slides': total_slides,
             'completed_slides': completed_slides,
-            'progress_percent': progress_percent
+            'progress_percent': progress_percent,
+            'school_level': school_level,
+            'subject': subject,
         })
-    
+
     context = {
         'course_data': course_data,
+        'school_levels': sorted(school_levels),
+        'targets': sorted(targets),
+        'subjects': sorted(subjects),
     }
-    
+
     return render(request, 'student/course_list.html', context)
 
 # ====================================================================

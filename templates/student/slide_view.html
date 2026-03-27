@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/static/css/student/slides/choice.css">
     <link rel="stylesheet" href="/static/css/student/slides/drag.css">
     <link rel="stylesheet" href="/static/css/student/slides/line.css">
+    <link rel="stylesheet" href="/static/css/student/slides/motion.css">
     <style>
         /* Multi-choice 정답/오답 상태 스타일 */
         .answer.multi-choice.border-green-500 {
@@ -92,8 +93,18 @@
    
 </head>
 <body class="bg-slate-50">
+    <!-- 배경 플로팅 파티클 -->
+    <div class="motion-particles" aria-hidden="true">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
-    
+
     {% include 'student/pages/nav.html' %}
 
     <div class="main-content min-h-screen">

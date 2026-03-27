@@ -4,205 +4,234 @@
 {% block page_title %}내 코스{% endblock %}
 
 {% block content %}
-<!-- 페이지 헤더 -->
-<div class="mb-8">
-    <h1 class="text-3xl font-bold text-slate-900 mb-2">내 코스</h1>
-    <p class="text-lg text-slate-600">총 {{ course_data|length }}개의 코스가 할당되어 있습니다.</p>
-</div>
-
-<!-- 필터 및 검색 -->
-<div class="bg-white rounded-2xl p-6 border border-slate-200 mb-8">
-    <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
-        <!-- 검색 바 -->
-        <div class="w-full lg:w-96">
-            <div class="relative">
-                <input type="text" 
-                       placeholder="코스명, 선생님 이름으로 검색" 
-                       class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+<div x-data="courseFilter()">
+    <!-- 헤더 + 필터 -->
+    <div class="mb-5">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">내 코스</h1>
+                <p class="text-sm text-slate-500 mt-0.5">총 {{ course_data|length }}개의 코스가 할당되어 있습니다.</p>
             </div>
         </div>
-        
-        <!-- 필터 옵션 -->
-        <div class="flex flex-wrap gap-3">
-            <select class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-medium text-slate-700">
-                <option value="all">모든 상태</option>
-                <option value="in-progress">진행 중</option>
-                <option value="completed">완료</option>
-                <option value="not-started">미시작</option>
+
+        <!-- 필터 바 -->
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- 학교급 -->
+            <select x-model="filters.level" @change="applyFilter()"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <option value="">전체 학교급</option>
+                {% for level in school_levels %}
+                <option value="{{ level }}">{{ level }}</option>
+                {% endfor %}
             </select>
-            
-            <select class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-medium text-slate-700">
-                <option value="recent">최근 할당순</option>
-                <option value="progress">진도율순</option>
-                <option value="name">이름순</option>
-                <option value="deadline">마감일순</option>
+
+            <!-- 학년군 -->
+            <select x-model="filters.target" @change="applyFilter()"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <option value="">전체 학년군</option>
+                {% for t in targets %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
             </select>
-            
-            <button class="px-4 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all text-sm font-medium flex items-center gap-2">
-                <i class="fas fa-filter"></i>
-                필터 적용
+
+            <!-- 교과 -->
+            <select x-model="filters.subject" @change="applyFilter()"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <option value="">전체 교과</option>
+                {% for s in subjects %}
+                <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- 초기화 -->
+            <button x-show="filters.level || filters.target || filters.subject"
+                    @click="resetFilters()"
+                    class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-all">
+                <i class="fas fa-times mr-1"></i>초기화
             </button>
+
+            <!-- 결과 카운트 -->
+            <span class="ml-auto text-xs text-slate-400" x-text="visibleCount + '개 표시'"></span>
         </div>
     </div>
-</div>
 
-<!-- 코스 그리드 -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-    {% for data in course_data %}
-    <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 card-hover group">
-        <!-- 코스 헤더 이미지 -->
-        <div class="h-48 relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br 
-                        {% cycle 'from-blue-400 to-blue-600' 'from-purple-400 to-purple-600' 'from-green-400 to-green-600' 'from-orange-400 to-orange-600' 'from-pink-400 to-pink-600' 'from-indigo-400 to-indigo-600' %}">
-                <div class="absolute inset-0 bg-black opacity-20"></div>
-            </div>
-            <div class="relative h-full flex flex-col justify-between p-6">
-                <div class="flex items-start justify-between">
-                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                        <i class="fas fa-book-open text-white text-xl"></i>
+    <!-- 코스 그리드 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for data in course_data %}
+        <a href="{% url 'student:learning_course' data.assignment.course.id %}"
+           class="course-card block bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all group"
+           data-level="{{ data.school_level }}"
+           data-target="{{ data.assignment.course.target }}"
+           data-subject="{{ data.subject }}">
+
+            <!-- 카드 상단: 아이콘 + 제목 -->
+            <div class="p-4 pb-3">
+                <div class="flex items-start gap-3">
+                    <!-- 교과 아이콘 -->
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 subject-icon"
+                         :style="getSubjectStyle('{{ data.subject }}')">
+                        <i class="text-white text-sm" :class="getSubjectIcon('{{ data.subject }}')"></i>
                     </div>
-                    <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-bold text-slate-900 truncate group-hover:text-purple-700 transition-colors">
+                            {{ data.assignment.course.subject_name }}
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ data.assignment.course.teacher.user.get_full_name }} 선생님</p>
+                    </div>
+                    {% if data.progress_percent == 100 %}
+                    <span class="flex-shrink-0 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-white text-[8px]"></i>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 카드 하단: 진도 + 정보 -->
+            <div class="px-4 pb-4">
+                <!-- 대상 태그 -->
+                <div class="flex items-center gap-1.5 mb-2.5">
+                    <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-medium rounded">
                         {{ data.assignment.course.target }}
                     </span>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold text-white mb-1">{{ data.assignment.course.subject_name }}</h3>
-                    <p class="text-white/80 text-sm">{{ data.assignment.course.teacher.user.get_full_name }} 선생님</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 코스 내용 -->
-        <div class="p-6">
-            <!-- 코스 설명 -->
-            <p class="text-sm text-slate-600 mb-4 line-clamp-2">
-                {{ data.assignment.course.description|default:"이 코스에서는 다양한 학습 내용을 체계적으로 배울 수 있습니다." }}
-            </p>
-            
-            <!-- 진도 정보 -->
-            <div class="mb-4">
-                <div class="flex items-center justify-between text-sm mb-2">
-                    <span class="text-slate-600">학습 진도</span>
-                    <span class="font-bold text-slate-900">{{ data.progress_percent|floatformat:0 }}%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500 
-                                {% if data.progress_percent >= 80 %}bg-gradient-to-r from-green-500 to-green-600
-                                {% elif data.progress_percent >= 50 %}bg-gradient-to-r from-blue-500 to-blue-600
-                                {% elif data.progress_percent >= 20 %}bg-gradient-to-r from-yellow-500 to-yellow-600
-                                {% else %}bg-gradient-to-r from-slate-400 to-slate-500{% endif %}"
-                         style="width: {{ data.progress_percent }}%">
+
+                <!-- 진도 바 -->
+                <div class="flex items-center gap-2.5">
+                    <div class="flex-1 bg-slate-100 rounded-full h-1.5">
+                        <div class="h-full rounded-full transition-all duration-500
+                                    {% if data.progress_percent >= 80 %}bg-green-500
+                                    {% elif data.progress_percent >= 50 %}bg-blue-500
+                                    {% elif data.progress_percent >= 20 %}bg-yellow-500
+                                    {% else %}bg-slate-300{% endif %}"
+                             style="width: {{ data.progress_percent }}%">
+                        </div>
                     </div>
+                    <span class="text-[11px] font-semibold text-slate-600 w-8 text-right">{{ data.progress_percent|floatformat:0 }}%</span>
                 </div>
-                <div class="flex items-center justify-between text-xs text-slate-500 mt-2">
-                    <span>{{ data.completed_slides }}개 완료</span>
-                    <span>총 {{ data.total_slides }}개</span>
-                </div>
-            </div>
-            
-            <!-- 추가 정보 -->
-            <div class="flex items-center gap-4 text-xs text-slate-500 pb-4 border-b border-slate-100">
-                <div class="flex items-center gap-1">
-                    <i class="fas fa-calendar"></i>
-                    <span>{{ data.assignment.assigned_date|date:"Y.m.d" }} 할당</span>
-                </div>
-                {% if data.assignment.due_date %}
-                <div class="flex items-center gap-1">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ data.assignment.due_date|date:"m.d" }} 마감</span>
-                </div>
-                {% endif %}
-            </div>
-            
-            <!-- 액션 버튼 -->
-            <div class="flex gap-3 mt-4">
-                <a href="{% url 'student:learning_course' data.assignment.course.id %}" 
-                   class="flex-1 py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all text-center text-sm group-hover:shadow-lg">
-                    <i class="fas fa-play mr-2"></i>학습 시작
-                </a>
-                <button class="p-3 text-slate-600 hover:text-slate-800 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all"
-                        onclick="showCourseInfo({{ data.assignment.course.id }})">
-                    <i class="fas fa-info-circle"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- 상태 배지 -->
-        {% if data.progress_percent == 100 %}
-        <div class="absolute top-4 right-4">
-            <span class="px-3 py-1.5 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
-                <i class="fas fa-check-circle"></i> 완료
-            </span>
-        </div>
-        {% elif data.progress_percent > 0 %}
-        <div class="absolute top-4 right-4">
-            <span class="px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full flex items-center gap-1">
-                <i class="fas fa-spinner"></i> 진행 중
-            </span>
-        </div>
-        {% endif %}
-    </div>
-    {% empty %}
-    <div class="col-span-full">
-        <div class="bg-white rounded-2xl p-16 text-center border border-slate-200">
-            <i class="fas fa-graduation-cap text-6xl text-slate-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-slate-700 mb-2">할당받은 코스가 없습니다</h3>
-            <p class="text-slate-500">담당 선생님께 코스 할당을 요청하세요.</p>
-        </div>
-    </div>
-    {% endfor %}
-</div>
 
-<!-- 페이지네이션 (필요시) -->
-{% if course_data|length > 9 %}
-<div class="mt-8 flex justify-center">
-    <nav class="flex gap-1">
-        <button class="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-all">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="px-4 py-2 bg-purple-600 text-white rounded-lg">1</button>
-        <button class="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-all">2</button>
-        <button class="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-all">3</button>
-        <button class="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-all">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </nav>
-</div>
-{% endif %}
-
-<!-- 코스 정보 모달 -->
-<div id="courseInfoModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        <div class="p-6 border-b border-slate-200">
-            <div class="flex items-center justify-between">
-                <h3 class="text-xl font-semibold text-slate-900">코스 상세 정보</h3>
-                <button onclick="closeCourseInfo()" class="p-2 hover:bg-slate-100 rounded-lg transition-all">
-                    <i class="fas fa-times text-slate-400"></i>
-                </button>
+                <!-- 슬라이드 수 -->
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-[11px] text-slate-400">{{ data.completed_slides }}/{{ data.total_slides }} 슬라이드</span>
+                    <span class="text-[11px] text-purple-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        학습하기 <i class="fas fa-arrow-right text-[8px]"></i>
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full">
+            <div class="bg-white rounded-xl p-12 text-center border border-slate-200">
+                <i class="fas fa-graduation-cap text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-lg font-semibold text-slate-700 mb-1">할당받은 코스가 없습니다</h3>
+                <p class="text-sm text-slate-500">담당 선생님께 코스 할당을 요청하세요.</p>
             </div>
         </div>
-        <div class="p-6 overflow-y-auto" id="courseInfoContent">
-            <!-- 동적으로 내용이 채워집니다 -->
+        {% endfor %}
+    </div>
+
+    <!-- 필터 결과 없음 -->
+    <div x-show="visibleCount === 0 && {{ course_data|length }} > 0" class="mt-4">
+        <div class="bg-white rounded-xl p-8 text-center border border-slate-200">
+            <i class="fas fa-filter text-3xl text-slate-300 mb-2"></i>
+            <p class="text-sm text-slate-500">선택한 필터에 해당하는 코스가 없습니다.</p>
         </div>
     </div>
 </div>
 
 <script>
-function showCourseInfo(courseId) {
-    // 실제로는 AJAX로 코스 정보를 가져와야 합니다
-    document.getElementById('courseInfoModal').classList.remove('hidden');
-}
+function courseFilter() {
+    return {
+        filters: { level: '', target: '', subject: '' },
+        visibleCount: {{ course_data|length }},
 
-function closeCourseInfo() {
-    document.getElementById('courseInfoModal').classList.add('hidden');
-}
+        applyFilter() {
+            let count = 0;
+            document.querySelectorAll('.course-card').forEach(card => {
+                const matchLevel = !this.filters.level || card.dataset.level === this.filters.level;
+                const matchTarget = !this.filters.target || card.dataset.target === this.filters.target;
+                const matchSubject = !this.filters.subject || card.dataset.subject === this.filters.subject;
+                const visible = matchLevel && matchTarget && matchSubject;
+                card.style.display = visible ? '' : 'none';
+                if (visible) count++;
+            });
+            this.visibleCount = count;
+        },
 
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeCourseInfo();
-    }
-});
+        resetFilters() {
+            this.filters = { level: '', target: '', subject: '' };
+            this.applyFilter();
+        },
+
+        getSubjectIcon(name) {
+            const icons = {
+                '국어': 'fas fa-book',
+                '수학': 'fas fa-square-root-alt',
+                '영어': 'fas fa-globe-americas',
+                '과학': 'fas fa-flask',
+                '사회': 'fas fa-landmark',
+                '역사': 'fas fa-scroll',
+                '한국사': 'fas fa-scroll',
+                '도덕': 'fas fa-heart',
+                '음악': 'fas fa-music',
+                '미술': 'fas fa-palette',
+                '체육': 'fas fa-futbol',
+                '기술': 'fas fa-cogs',
+                '가정': 'fas fa-home',
+                '실과': 'fas fa-tools',
+                '정보': 'fas fa-laptop-code',
+                '한문': 'fas fa-pen-nib',
+                '통합': 'fas fa-puzzle-piece',
+                '창체': 'fas fa-users',
+                '진로': 'fas fa-compass',
+                '보건': 'fas fa-first-aid',
+                '환경': 'fas fa-leaf',
+                '철학': 'fas fa-brain',
+                '논술': 'fas fa-pen-fancy',
+                '경제': 'fas fa-chart-line',
+                '지리': 'fas fa-map-marked-alt',
+                '물리': 'fas fa-atom',
+                '화학': 'fas fa-vial',
+                '생물': 'fas fa-dna',
+                '지구과학': 'fas fa-globe-asia',
+            };
+            for (const [key, icon] of Object.entries(icons)) {
+                if (name.includes(key)) return icon;
+            }
+            return 'fas fa-book-open';
+        },
+
+        getSubjectStyle(name) {
+            const colors = {
+                '국어': 'background: linear-gradient(135deg, #3b82f6, #2563eb)',
+                '수학': 'background: linear-gradient(135deg, #10b981, #059669)',
+                '영어': 'background: linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                '과학': 'background: linear-gradient(135deg, #f59e0b, #d97706)',
+                '사회': 'background: linear-gradient(135deg, #06b6d4, #0891b2)',
+                '역사': 'background: linear-gradient(135deg, #a16207, #92400e)',
+                '한국사': 'background: linear-gradient(135deg, #a16207, #92400e)',
+                '도덕': 'background: linear-gradient(135deg, #ec4899, #db2777)',
+                '음악': 'background: linear-gradient(135deg, #e879f9, #c026d3)',
+                '미술': 'background: linear-gradient(135deg, #f43f5e, #e11d48)',
+                '체육': 'background: linear-gradient(135deg, #ef4444, #dc2626)',
+                '기술': 'background: linear-gradient(135deg, #64748b, #475569)',
+                '가정': 'background: linear-gradient(135deg, #fb923c, #ea580c)',
+                '실과': 'background: linear-gradient(135deg, #78716c, #57534e)',
+                '정보': 'background: linear-gradient(135deg, #6366f1, #4f46e5)',
+                '한문': 'background: linear-gradient(135deg, #ca8a04, #a16207)',
+                '통합': 'background: linear-gradient(135deg, #14b8a6, #0d9488)',
+                '창체': 'background: linear-gradient(135deg, #22d3ee, #06b6d4)',
+                '진로': 'background: linear-gradient(135deg, #a78bfa, #7c3aed)',
+                '물리': 'background: linear-gradient(135deg, #60a5fa, #3b82f6)',
+                '화학': 'background: linear-gradient(135deg, #34d399, #10b981)',
+                '생물': 'background: linear-gradient(135deg, #4ade80, #22c55e)',
+                '지구과학': 'background: linear-gradient(135deg, #38bdf8, #0ea5e9)',
+            };
+            for (const [key, style] of Object.entries(colors)) {
+                if (name.includes(key)) return style;
+            }
+            return 'background: linear-gradient(135deg, #94a3b8, #64748b)';
+        }
+    };
+}
 </script>
 {% endblock %}
