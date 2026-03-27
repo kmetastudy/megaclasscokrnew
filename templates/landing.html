@@ -1,717 +1,1389 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌈 해피 러닝 - 특별한 친구들을 위한 즐거운 학습 플랫폼 ⭐</title>
+    <title>메가클래스 - 특수교육 맞춤형 학습 플랫폼</title>
+    <meta name="description" content="AI 기반 개별화 교육으로 모든 특수교육 대상 학생이 자기 속도로 배우는 메가클래스">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                            800: '#3730A3',
+                            900: '#312E81',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        /* 부드럽고 느린 애니메이션 */
-        @keyframes gentle-float {
-            0%, 100% { 
-                transform: translateY(0px) scale(1); 
-            }
-            50% { 
-                transform: translateY(-8px) scale(1.02); 
-            }
+        /* ===== Base ===== */
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        @keyframes soft-bounce {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-10px) scale(1.05); }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-        
-        @keyframes gentle-wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(1deg); }
-            75% { transform: rotate(-1deg); }
-        }
-        
-        @keyframes soft-sparkle {
-            0% { transform: scale(0.8); opacity: 0.3; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.3; }
-        }
-        
-        @keyframes gentle-heartbeat {
+        @keyframes countPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
         }
-        
-        @keyframes slow-rainbow-bg {
+        @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
-        @keyframes celebration {
-            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-            25% { transform: translateY(-30px) rotate(45deg) scale(1.1); opacity: 0.9; }
-            50% { transform: translateY(-60px) rotate(90deg) scale(1.2); opacity: 0.7; }
-            75% { transform: translateY(-90px) rotate(135deg) scale(1.1); opacity: 0.5; }
-            100% { transform: translateY(-120px) rotate(180deg) scale(0.8); opacity: 0; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-8px) rotate(1deg); }
+            66% { transform: translateY(4px) rotate(-1deg); }
         }
-        
-        .rainbow-float { animation: gentle-float 8s ease-in-out infinite; }
-        .bounce-happy { animation: soft-bounce 4s ease-in-out infinite; }
-        .wiggle { animation: gentle-wiggle 3s ease-in-out infinite; }
-        .sparkle { animation: soft-sparkle 4s ease-in-out infinite; }
-        .heartbeat { animation: gentle-heartbeat 3s ease-in-out infinite; }
-        
-        /* 무지개 그라디언트 */
-        .rainbow-gradient {
-            background: linear-gradient(45deg, 
-                #ff6b6b 0%, #4ecdc4 14%, #45b7d1 28%, 
-                #96ceb4 42%, #feca57 56%, #ff9ff3 70%, 
-                #54a0ff 84%, #5f27cd 100%);
-            background-size: 400% 400%;
-            animation: slow-rainbow-bg 12s ease infinite;
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-        
-        .rainbow-text {
-            background: linear-gradient(45deg, 
-                #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, 
-                #feca57, #ff9ff3, #54a0ff, #5f27cd);
-            background-size: 400% 400%;
-            animation: slow-rainbow-bg 8s ease infinite;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-        
-        /* 즐거운 카드 효과 */
-        .happy-card {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(255, 255, 255, 0.7) 100%);
-            backdrop-filter: blur(20px);
-            border: 3px solid transparent;
-            background-clip: padding-box;
-            transition: all 0.3s ease;
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
-        
-        .happy-card:hover {
-            transform: scale(1.05) rotate(2deg);
-            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.3);
-            border-color: #ff6b6b;
+        @keyframes drawLine {
+            from { stroke-dashoffset: 100; }
+            to { stroke-dashoffset: 0; }
         }
-        
-        /* 큰 버튼 스타일 */
-        .big-happy-btn {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border: none;
-            border-radius: 25px;
-            padding: 20px 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            cursor: pointer;
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 0 12px rgba(79, 70, 229, 0); }
         }
-        
-        .big-happy-btn:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-        
-        /* 축하 이벤트 효과 */
-        .celebration-particle {
-            position: absolute;
-            font-size: 30px;
-            animation: celebration 3s ease-out forwards;
-            pointer-events: none;
-        }
-        
-        /* 스크롤 애니메이션 */
-        .scroll-animate {
+
+        /* ===== Scroll Animation Classes ===== */
+        .anim-fade-up {
             opacity: 0;
-            transform: translateY(50px) scale(0.9);
-            transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+            transform: translateY(30px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        
-        .scroll-animate.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+        .anim-fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        .anim-fade-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        
-        /* 별 반짝임 효과 */
-        .star-field {
+        .anim-fade-left.visible { opacity: 1; transform: translateX(0); }
+
+        .anim-fade-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .anim-fade-right.visible { opacity: 1; transform: translateX(0); }
+
+        .anim-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .anim-scale.visible { opacity: 1; transform: scale(1); }
+
+        /* Stagger delays */
+        .delay-1 { transition-delay: 100ms; }
+        .delay-2 { transition-delay: 200ms; }
+        .delay-3 { transition-delay: 300ms; }
+        .delay-4 { transition-delay: 400ms; }
+        .delay-5 { transition-delay: 500ms; }
+
+        /* ===== Hover Effects ===== */
+        .card-hover {
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-outline {
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Hero Background ===== */
+        .hero-bg {
+            background: linear-gradient(135deg, #4338CA 0%, #4F46E5 30%, #6366F1 60%, #7C3AED 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
             position: relative;
             overflow: hidden;
         }
-        
-        .star {
+        .hero-bg::before {
+            content: '';
             position: absolute;
-            color: #feca57;
-            animation: sparkle 2s ease-in-out infinite;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.04) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 70%);
+            pointer-events: none;
         }
-        
-        /* 하트 떠다니는 효과 */
-        .floating-heart {
+
+        /* ===== Geometric Decorations ===== */
+        .geo-shape {
             position: absolute;
-            color: #ff6b6b;
-            font-size: 20px;
-            animation: rainbow-float 6s ease-in-out infinite;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.06;
+        }
+
+        /* ===== Stats Bar ===== */
+        .stats-bar {
+            position: relative;
+            z-index: 10;
+            margin-top: -60px;
+        }
+
+        /* ===== Feature Icon ===== */
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        /* ===== Content Type Card ===== */
+        .content-type-card {
+            border: 1px solid #E2E8F0;
+            transition: all 0.25s ease;
+        }
+        .content-type-card:hover {
+            border-color: #C7D2FE;
+            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.08);
+            transform: translateY(-3px);
+        }
+
+        /* ===== Scroll Indicator ===== */
+        .scroll-indicator {
+            animation: gentleBounce 2.5s ease-in-out infinite;
+        }
+
+        /* ===== Navbar ===== */
+        .navbar-scrolled {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== Mobile Menu ===== */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .mobile-menu.open {
+            max-height: 400px;
+        }
+
+        /* ===== SVG Hierarchy Diagram ===== */
+        .hierarchy-node {
+            transition: transform 0.3s ease;
+        }
+        .hierarchy-node:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== Focus Styles ===== */
+        :focus-visible {
+            outline: 3px solid #4F46E5;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* ===== Reduced Motion ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .anim-fade-up, .anim-fade-left, .anim-fade-right, .anim-scale {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* ===== Problem Arrow ===== */
+        .problem-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10B981;
+            font-size: 28px;
+            padding: 16px 0;
+        }
+
+        /* ===== Dual Panel ===== */
+        .panel-teacher { background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); }
+        .panel-student { background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); }
+
+        /* ===== Progress Bar ===== */
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #E2E8F0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s ease;
+        }
+
+        /* ===== CTA Gradient ===== */
+        .cta-bg {
+            background: linear-gradient(135deg, #4338CA 0%, #6D28D9 50%, #7C3AED 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 70%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* ===== AI Badge ===== */
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid;
+            transition: transform 0.2s ease;
+        }
+        .ai-badge:hover { transform: scale(1.05); }
+
+        /* ===== Tablet Mockup ===== */
+        .tablet-mockup {
+            background: #1E293B;
+            border-radius: 24px;
+            padding: 12px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+        .tablet-screen {
+            background: #F8FAFC;
+            border-radius: 16px;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="font-sans overflow-x-hidden bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100">
-    <!-- 즐거운 네비게이션 -->
-    <nav class="fixed w-full z-50 transition-all duration-500 bg-white/90 backdrop-blur-lg shadow-lg mb-8" id="navbar">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-16 h-16 rainbow-gradient rounded-full flex items-center justify-center shadow-lg bounce-happy">
-                        <span class="text-3xl">🌈</span>
+<body class="font-sans bg-neutral-50 text-slate-800 antialiased">
+
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-brand-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm">
+        본문으로 건너뛰기
+    </a>
+
+    <!-- ============================== -->
+    <!-- SECTION 1: Navigation Bar      -->
+    <!-- ============================== -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-18">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-brand-600 to-purple-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                        <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
                     </div>
-                    <div>
-                        <span class="rainbow-text font-bold text-2xl">해피 러닝</span>
-                        <div class="text-purple-600 text-sm font-bold">✨ 즐거운 학습 친구 ✨</div>
-                    </div>
+                    <span class="text-xl font-bold text-slate-800">메가클래스</span>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden lg:flex items-center gap-8">
+                    <a href="#why" class="text-[15px] font-medium text-slate-600 hover:text-brand-600 transition-colors">소개</a>
+                    <a href="#features" class="text-[15px] font-medium text-slate-600 hover:text-brand-600 transition-colors">기능</a>
+                    <a href="#content-types" class="text-[15px] font-medium text-slate-600 hover:text-brand-600 transition-colors">콘텐츠</a>
                 </div>
-                
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="#features" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">📚 학습하기</a>
-                    <a href="#subjects" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">🎯 과목들</a>
-                    <a href="#achievements" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg wiggle">🏆 성취하기</a>
+
+                <!-- Auth Buttons -->
+                <div class="hidden lg:flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <a href="/admin/" class="text-sm font-medium text-slate-600 hover:text-brand-600 px-4 py-2 transition-colors">관리자</a>
+                        {% endif %}
+                        <a href="{% if user.teacher %}/teacher/{% elif user.student %}/student/{% else %}/{% endif %}" class="btn-primary inline-flex items-center gap-2 bg-brand-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+                            <i class="fa-solid fa-columns"></i> 대시보드
+                        </a>
+                    {% else %}
+                        <a href="/accounts/login/" class="text-sm font-medium text-slate-600 hover:text-brand-600 px-4 py-2 transition-colors">로그인</a>
+                        <a href="/accounts/register/teacher/" class="btn-primary inline-flex items-center gap-2 bg-brand-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+                            <i class="fa-solid fa-user-plus"></i> 교사 가입
+                        </a>
+                    {% endif %}
                 </div>
-                
-                <div class="flex items-center space-x-4">
-                    <div id="userInfo" style="display: none;" class="happy-card rounded-full px-4 py-2">
-                        <span class="text-purple-600 font-bold" id="userName">환영해요! 😊</span>
-                    </div>
-                    <div id="authButtons">
-                        <a href="/accounts/login/" class="text-purple-600 hover:text-pink-500 transition-all duration-300 font-bold text-lg mr-4">
-                            🔑 로그인
-                        </a>
-                        <button class="big-happy-btn heartbeat" onclick="window.location.href='/accounts/register/teacher/'">
-                            👩‍🏫 선생님 가입
-                        </button>
-                    </div>
-                    <div id="dashboardButtons" style="display: none;">
-                        <a href="/teacher/" class="big-happy-btn mr-4" style="background: linear-gradient(45deg, #4ecdc4, #96ceb4);">
-                            👩‍🏫 선생님 화면
-                        </a>
-                        <a href="/student/" class="big-happy-btn" style="background: linear-gradient(45deg, #ff6b6b, #feca57);">
-                            👦👧 학생 화면
-                        </a>
+
+                <!-- Mobile Hamburger -->
+                <button id="mobile-menu-btn" class="lg:hidden p-2 text-slate-600 hover:text-brand-600 transition-colors" aria-label="메뉴 열기">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu lg:hidden border-t border-slate-100">
+                <div class="py-4 space-y-1">
+                    <a href="#why" class="block px-4 py-3 text-sm font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-lg">소개</a>
+                    <a href="#features" class="block px-4 py-3 text-sm font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-lg">기능</a>
+                    <a href="#content-types" class="block px-4 py-3 text-sm font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-lg">콘텐츠</a>
+                    <div class="pt-3 border-t border-slate-100 space-y-2 px-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% if user.teacher %}/teacher/{% elif user.student %}/student/{% else %}/{% endif %}" class="block w-full text-center bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl">대시보드</a>
+                        {% else %}
+                            <a href="/accounts/login/" class="block w-full text-center text-sm font-medium text-slate-600 py-2.5">로그인</a>
+                            <a href="/accounts/register/teacher/" class="block w-full text-center bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl">교사 가입</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- 메인 히어로 섹션 -->
-    <section class="rainbow-gradient min-h-screen flex items-center relative overflow-hidden star-field">
-        <!-- 별들 -->
-        <div class="star" style="top: 10%; left: 10%; animation-delay: 0s;">⭐</div>
-        <div class="star" style="top: 20%; left: 80%; animation-delay: 0.5s;">✨</div>
-        <div class="star" style="top: 70%; left: 20%; animation-delay: 1s;">🌟</div>
-        <div class="star" style="top: 80%; left: 90%; animation-delay: 1.5s;">💫</div>
-        <div class="star" style="top: 30%; left: 70%; animation-delay: 2s;">⭐</div>
-        
-        <!-- 하트들 -->
-        <div class="floating-heart" style="top: 15%; left: 15%; animation-delay: 0s;">💖</div>
-        <div class="floating-heart" style="top: 60%; left: 85%; animation-delay: 1s;">💝</div>
-        <div class="floating-heart" style="top: 85%; left: 10%; animation-delay: 2s;">💕</div>
-        
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="max-w-5xl mx-auto text-center text-white">
-                <h1 class="text-7xl lg:text-8xl font-bold mb-8 rainbow-float text-shadow-lg">
-                    🌈 해피 러닝 🌈
-                </h1>
-                <h2 class="text-4xl mb-8 bounce-happy">
-                    특별한 친구들을 위한<br>
-                    <span class="text-yellow-300">✨ 맞춤형 즐거운 학습 ✨</span>
+    <main id="main-content">
+
+    <!-- ============================== -->
+    <!-- SECTION 2: Hero                -->
+    <!-- ============================== -->
+    <section id="hero" class="hero-bg min-h-screen flex items-center pt-16 relative">
+        <!-- Geometric Decorations -->
+        <div class="geo-shape w-72 h-72 bg-white" style="top: 10%; left: -5%;"></div>
+        <div class="geo-shape w-96 h-96 bg-white" style="bottom: 5%; right: -10%;"></div>
+        <div class="geo-shape w-40 h-40 bg-white" style="top: 30%; right: 25%;"></div>
+        <div class="geo-shape w-24 h-24 bg-white" style="bottom: 30%; left: 15%;"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 py-20 lg:py-0">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <!-- Left: Text Content -->
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium px-4 py-2 rounded-full mb-8 border border-white/20">
+                        <i class="fa-solid fa-sparkles text-amber-300"></i>
+                        AI 기반 특수교육 플랫폼
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.15] mb-6">
+                        특수교육을 위한<br>
+                        <span class="bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent">맞춤형 학습 플랫폼</span>
+                    </h1>
+
+                    <p class="text-lg sm:text-xl text-indigo-100 leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0">
+                        AI가 만드는 개별화 교육 콘텐츠,<br class="hidden sm:block">
+                        모든 학생이 자기 속도로 배우는 메가클래스
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="/accounts/register/teacher/" class="btn-primary inline-flex items-center justify-center gap-2 bg-white text-brand-700 font-bold text-base px-8 py-4 rounded-2xl shadow-lg">
+                            <i class="fa-solid fa-rocket"></i> 무료로 시작하기
+                        </a>
+                        <a href="#features" class="btn-outline inline-flex items-center justify-center gap-2 border-2 border-white/40 text-white font-semibold text-base px-8 py-4 rounded-2xl">
+                            <i class="fa-solid fa-play"></i> 기능 둘러보기
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: Tablet Mockup -->
+                <div class="hidden lg:block" style="animation: float 8s ease-in-out infinite;">
+                    <div class="tablet-mockup max-w-md mx-auto">
+                        <div class="tablet-screen aspect-[4/3] p-4">
+                            <!-- Simulated Dashboard UI -->
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-graduation-cap text-white text-xs"></i>
+                                </div>
+                                <div class="h-3 w-24 bg-slate-200 rounded-full"></div>
+                                <div class="ml-auto w-6 h-6 rounded-full bg-amber-100"></div>
+                            </div>
+                            <!-- Stat Cards Row -->
+                            <div class="grid grid-cols-3 gap-2 mb-3">
+                                <div class="bg-brand-50 rounded-xl p-2.5">
+                                    <div class="w-5 h-5 rounded-lg bg-brand-500 mb-1.5"></div>
+                                    <div class="h-2 w-8 bg-brand-200 rounded-full mb-1"></div>
+                                    <div class="h-4 w-10 bg-brand-300 rounded-full font-bold"></div>
+                                </div>
+                                <div class="bg-emerald-50 rounded-xl p-2.5">
+                                    <div class="w-5 h-5 rounded-lg bg-emerald-500 mb-1.5"></div>
+                                    <div class="h-2 w-8 bg-emerald-200 rounded-full mb-1"></div>
+                                    <div class="h-4 w-10 bg-emerald-300 rounded-full"></div>
+                                </div>
+                                <div class="bg-amber-50 rounded-xl p-2.5">
+                                    <div class="w-5 h-5 rounded-lg bg-amber-500 mb-1.5"></div>
+                                    <div class="h-2 w-8 bg-amber-200 rounded-full mb-1"></div>
+                                    <div class="h-4 w-10 bg-amber-300 rounded-full"></div>
+                                </div>
+                            </div>
+                            <!-- Course Cards -->
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl p-2.5">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-book text-white text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="h-2.5 w-20 bg-slate-200 rounded-full mb-1.5"></div>
+                                        <div class="progress-bar"><div class="progress-fill bg-blue-500" style="width: 75%;"></div></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-blue-600">75%</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl p-2.5">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-calculator text-white text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="h-2.5 w-16 bg-slate-200 rounded-full mb-1.5"></div>
+                                        <div class="progress-bar"><div class="progress-fill bg-emerald-500" style="width: 45%;"></div></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-emerald-600">45%</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl p-2.5">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-palette text-white text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="h-2.5 w-24 bg-slate-200 rounded-full mb-1.5"></div>
+                                        <div class="progress-bar"><div class="progress-fill bg-purple-500" style="width: 90%;"></div></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-purple-600">90%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 scroll-indicator">
+            <div class="flex flex-col items-center gap-2 text-white/60">
+                <span class="text-xs font-medium tracking-wider uppercase">Scroll</span>
+                <i class="fa-solid fa-chevron-down text-sm"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar (Overlapping) -->
+    <div class="stats-bar max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div class="text-center anim-fade-up">
+                <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-brand-50 flex items-center justify-center">
+                    <i class="fa-solid fa-school text-brand-600 text-lg"></i>
+                </div>
+                <div class="text-3xl font-bold text-slate-800" data-count="50" data-suffix="+">0</div>
+                <div class="text-sm text-slate-500 mt-1">참여 학교</div>
+            </div>
+            <div class="text-center anim-fade-up delay-1">
+                <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-emerald-50 flex items-center justify-center">
+                    <i class="fa-solid fa-users text-emerald-600 text-lg"></i>
+                </div>
+                <div class="text-3xl font-bold text-slate-800" data-count="3000" data-suffix="+">0</div>
+                <div class="text-sm text-slate-500 mt-1">학습 학생</div>
+            </div>
+            <div class="text-center anim-fade-up delay-2">
+                <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <i class="fa-solid fa-puzzle-piece text-purple-600 text-lg"></i>
+                </div>
+                <div class="text-3xl font-bold text-slate-800" data-count="11" data-suffix="+ 유형">0</div>
+                <div class="text-sm text-slate-500 mt-1">상호작용 콘텐츠</div>
+            </div>
+            <div class="text-center anim-fade-up delay-3">
+                <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <i class="fa-solid fa-microchip text-amber-600 text-lg"></i>
+                </div>
+                <div class="text-3xl font-bold text-slate-800" data-count="4" data-suffix="개">0</div>
+                <div class="text-sm text-slate-500 mt-1">AI 엔진</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================== -->
+    <!-- SECTION 3: Problem / Solution  -->
+    <!-- ============================== -->
+    <section id="why" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 anim-fade-up">
+                <span class="inline-flex items-center gap-2 text-brand-600 text-sm font-semibold tracking-wider uppercase mb-4">
+                    <i class="fa-solid fa-lightbulb"></i> WHY MEGACLASS
+                </span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                    특수교육, 이런 어려움 없으셨나요?
                 </h2>
-                <p class="text-2xl mb-12 text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                    🎯 개별 맞춤 학습으로 모든 친구가 성공할 수 있어요!<br>
-                    🏆 문제를 풀 때마다 재미있는 이벤트가 가득!<br>
-                    💝 함께 배우고 함께 성장하는 행복한 시간!
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    현장 교사들이 매일 겪는 과제를 AI 기술로 해결합니다
                 </p>
-                
-                <div class="flex flex-col sm:flex-row gap-8 justify-center mb-16">
-                    <a href="/accounts/login/" class="big-happy-btn rainbow-float" onclick="showSuccessEvent()">
-                        🎮 학습 시작하기 🎮
+            </div>
+
+            <!-- Problems -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-red-50/60 border border-red-100 rounded-2xl p-8 text-center anim-fade-up delay-1">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-red-100 flex items-center justify-center">
+                        <i class="fa-solid fa-gauge-high text-red-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3">학생마다 다른 학습 속도</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">같은 교실에서 서로 다른 수준의 학생들을 동시에 가르치기 어렵습니다</p>
+                </div>
+                <div class="bg-orange-50/60 border border-orange-100 rounded-2xl p-8 text-center anim-fade-up delay-2">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-orange-100 flex items-center justify-center">
+                        <i class="fa-solid fa-file-pen text-orange-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3">콘텐츠 제작의 어려움</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">맞춤형 학습 자료를 일일이 만드는 데 많은 시간이 소요됩니다</p>
+                </div>
+                <div class="bg-yellow-50/60 border border-yellow-100 rounded-2xl p-8 text-center anim-fade-up delay-3">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-yellow-100 flex items-center justify-center">
+                        <i class="fa-solid fa-chart-simple text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3">객관적 평가의 한계</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">학생의 역량을 체계적으로 분석하고 취약점을 파악하기 어렵습니다</p>
+                </div>
+            </div>
+
+            <!-- Arrow -->
+            <div class="problem-arrow anim-fade-up">
+                <i class="fa-solid fa-arrow-down"></i>
+            </div>
+
+            <!-- Solutions -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-8 text-center anim-fade-up delay-1">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                        <i class="fa-solid fa-user-gear text-emerald-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-emerald-700 mb-3">AI 개별 맞춤 학습</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">각 학생의 수준과 속도에 맞춘 개별화 학습 경로를 AI가 설계합니다</p>
+                </div>
+                <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-8 text-center anim-fade-up delay-2">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-blue-100 flex items-center justify-center">
+                        <i class="fa-solid fa-wand-magic-sparkles text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-blue-700 mb-3">AI 자동 콘텐츠 생성</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">4개의 AI 엔진이 다양한 유형의 학습 콘텐츠를 즉시 생성합니다</p>
+                </div>
+                <div class="bg-purple-50/60 border border-purple-100 rounded-2xl p-8 text-center anim-fade-up delay-3">
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-purple-100 flex items-center justify-center">
+                        <i class="fa-solid fa-bullseye text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-purple-700 mb-3">NCS 역량 기반 평가</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">국가 역량 표준에 기반한 적응형 평가로 취약점을 정확히 분석합니다</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 4: Core Features       -->
+    <!-- ============================== -->
+    <section id="features" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20 anim-fade-up">
+                <span class="inline-flex items-center gap-2 text-brand-600 text-sm font-semibold tracking-wider uppercase mb-4">
+                    <i class="fa-solid fa-cubes"></i> CORE FEATURES
+                </span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                    모든 기능, 하나의 플랫폼
+                </h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    수업 설계부터 평가, 건강 관리까지 특수교육에 필요한 모든 것
+                </p>
+            </div>
+
+            <!-- Feature 1: AI Content Creation -->
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
+                <div class="anim-fade-left">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                <i class="fa-solid fa-robot text-purple-600"></i>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-400">AI Content Generator</span>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-user text-brand-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-600">"초등 3학년 수준의 덧셈 객관식 문제 5개를 만들어주세요"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-brand-50 rounded-xl p-4 border border-purple-100">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-white text-xs"></i>
+                                </div>
+                                <div class="space-y-2 flex-1">
+                                    <div class="h-2.5 bg-purple-200/60 rounded-full w-full"></div>
+                                    <div class="h-2.5 bg-purple-200/60 rounded-full w-4/5"></div>
+                                    <div class="h-2.5 bg-purple-200/60 rounded-full w-3/5"></div>
+                                    <div class="flex gap-2 mt-3">
+                                        <span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">객관식</span>
+                                        <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">난이도: 하</span>
+                                        <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full">자동 채점</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="anim-fade-right">
+                    <div class="inline-flex items-center gap-2 text-purple-600 text-sm font-semibold mb-4">
+                        <i class="fa-solid fa-microchip"></i> AI 콘텐츠 생성
+                    </div>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">
+                        프롬프트 한 줄로<br>학습 콘텐츠 완성
+                    </h3>
+                    <p class="text-base text-slate-500 leading-relaxed mb-6">
+                        교사가 자연어로 요청하면 AI가 즉시 다양한 유형의 학습 콘텐츠를 생성합니다.
+                        객관식, 서술형, 드래그 앤 드롭 등 11가지 이상의 콘텐츠를 자동으로 만들어 수업 준비 시간을 획기적으로 줄입니다.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="ai-badge bg-purple-50 text-purple-700 border-purple-200"><i class="fa-solid fa-gem"></i> Gemini</span>
+                        <span class="ai-badge bg-orange-50 text-orange-700 border-orange-200"><i class="fa-solid fa-brain"></i> Claude</span>
+                        <span class="ai-badge bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-message"></i> ChatGPT</span>
+                        <span class="ai-badge bg-slate-100 text-slate-700 border-slate-200"><i class="fa-solid fa-bolt"></i> Grok</span>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 자연어 프롬프트 기반 콘텐츠 생성</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 난이도, 역량, 문제 유형 자동 태깅</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> JSON 일괄 업로드로 대량 콘텐츠 처리</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Feature 2: Hierarchical Structure -->
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
+                <div class="order-2 lg:order-1 anim-fade-left">
+                    <div class="inline-flex items-center gap-2 text-blue-600 text-sm font-semibold mb-4">
+                        <i class="fa-solid fa-sitemap"></i> 교육과정 구조
+                    </div>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">
+                        체계적인 5단계<br>교육과정 관리
+                    </h3>
+                    <p class="text-base text-slate-500 leading-relaxed mb-6">
+                        과목부터 개별 슬라이드까지, 5단계 계층 구조로 교육과정을 체계적으로 구성합니다.
+                        교사는 직관적인 인터페이스에서 드래그 앤 드롭으로 순서를 변경하고, 미리보기로 학생 화면을 확인할 수 있습니다.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 과목 → 대단원 → 소단원 → 차시 → 슬라이드</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 드래그 앤 드롭 순서 변경</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 학급/개인별 코스 배정</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 진행률 실시간 추적</li>
+                    </ul>
+                </div>
+                <div class="order-1 lg:order-2 anim-fade-right">
+                    <!-- SVG Hierarchy Diagram -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                        <svg viewBox="0 0 400 300" class="w-full" aria-label="교육과정 계층 구조 다이어그램">
+                            <!-- Level 1: Course -->
+                            <rect x="140" y="10" width="120" height="40" rx="12" fill="#4F46E5" class="hierarchy-node"/>
+                            <text x="200" y="35" text-anchor="middle" fill="white" font-size="13" font-weight="700" font-family="Noto Sans KR">과목 (Course)</text>
+
+                            <!-- Line to Level 2 -->
+                            <line x1="200" y1="50" x2="200" y2="70" stroke="#CBD5E1" stroke-width="2"/>
+
+                            <!-- Level 2: Chapter -->
+                            <rect x="130" y="70" width="140" height="36" rx="10" fill="#6366F1" class="hierarchy-node"/>
+                            <text x="200" y="93" text-anchor="middle" fill="white" font-size="12" font-weight="600" font-family="Noto Sans KR">대단원 (Chapter)</text>
+
+                            <!-- Line to Level 3 -->
+                            <line x1="200" y1="106" x2="200" y2="126" stroke="#CBD5E1" stroke-width="2"/>
+
+                            <!-- Level 3: SubChapter -->
+                            <rect x="120" y="126" width="160" height="36" rx="10" fill="#818CF8" class="hierarchy-node"/>
+                            <text x="200" y="149" text-anchor="middle" fill="white" font-size="12" font-weight="600" font-family="Noto Sans KR">소단원 (SubChapter)</text>
+
+                            <!-- Line to Level 4 -->
+                            <line x1="200" y1="162" x2="200" y2="182" stroke="#CBD5E1" stroke-width="2"/>
+
+                            <!-- Level 4: Chasi -->
+                            <rect x="135" y="182" width="130" height="36" rx="10" fill="#A5B4FC" class="hierarchy-node"/>
+                            <text x="200" y="205" text-anchor="middle" fill="#312E81" font-size="12" font-weight="600" font-family="Noto Sans KR">차시 (Lesson)</text>
+
+                            <!-- Lines to Level 5 -->
+                            <line x1="200" y1="218" x2="120" y2="245" stroke="#CBD5E1" stroke-width="2"/>
+                            <line x1="200" y1="218" x2="200" y2="245" stroke="#CBD5E1" stroke-width="2"/>
+                            <line x1="200" y1="218" x2="280" y2="245" stroke="#CBD5E1" stroke-width="2"/>
+
+                            <!-- Level 5: Slides -->
+                            <rect x="80" y="245" width="80" height="32" rx="8" fill="#E0E7FF" class="hierarchy-node"/>
+                            <text x="120" y="266" text-anchor="middle" fill="#4338CA" font-size="10" font-weight="600" font-family="Noto Sans KR">슬라이드 1</text>
+
+                            <rect x="160" y="245" width="80" height="32" rx="8" fill="#E0E7FF" class="hierarchy-node"/>
+                            <text x="200" y="266" text-anchor="middle" fill="#4338CA" font-size="10" font-weight="600" font-family="Noto Sans KR">슬라이드 2</text>
+
+                            <rect x="240" y="245" width="80" height="32" rx="8" fill="#E0E7FF" class="hierarchy-node"/>
+                            <text x="280" y="266" text-anchor="middle" fill="#4338CA" font-size="10" font-weight="600" font-family="Noto Sans KR">슬라이드 3</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: Interactive Content Types -->
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-24">
+                <div class="anim-fade-left">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="bg-blue-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-list-check text-blue-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">객관식</div>
+                            </div>
+                            <div class="bg-emerald-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-circle-check text-emerald-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">OX 퀴즈</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-hand-pointer text-purple-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">선택형</div>
+                            </div>
+                            <div class="bg-amber-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-keyboard text-amber-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">단답형</div>
+                            </div>
+                            <div class="bg-rose-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-pen-fancy text-rose-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">서술형</div>
+                            </div>
+                            <div class="bg-cyan-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-up-down-left-right text-cyan-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">드래그</div>
+                            </div>
+                            <div class="bg-indigo-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-diagram-project text-indigo-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">선 잇기</div>
+                            </div>
+                            <div class="bg-teal-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-arrow-down-1-9 text-teal-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">순서 배열</div>
+                            </div>
+                            <div class="bg-orange-50 rounded-xl p-4 text-center card-hover cursor-default">
+                                <i class="fa-solid fa-paper-plane text-orange-600 text-xl mb-2"></i>
+                                <div class="text-xs font-semibold text-slate-600">제출형</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="anim-fade-right">
+                    <div class="inline-flex items-center gap-2 text-emerald-600 text-sm font-semibold mb-4">
+                        <i class="fa-solid fa-shapes"></i> 상호작용 콘텐츠
+                    </div>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">
+                        11가지 이상의<br>다양한 학습 활동
+                    </h3>
+                    <p class="text-base text-slate-500 leading-relaxed mb-6">
+                        객관식부터 드래그 앤 드롭, 선 잇기, 순서 배열까지 다양한 상호작용 콘텐츠를 지원합니다.
+                        자동 채점과 부분 점수 시스템으로 학생의 학습 과정을 정확하게 평가합니다.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 자동 채점 및 부분 점수 지원</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 즉시 피드백과 해설 제공</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 체력 측정 및 건강 습관 기록</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Feature 4: NCS Competency Assessment -->
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="order-2 lg:order-1 anim-fade-left">
+                    <div class="inline-flex items-center gap-2 text-amber-600 text-sm font-semibold mb-4">
+                        <i class="fa-solid fa-bullseye"></i> 역량 기반 평가
+                    </div>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">
+                        NCS 국가 역량 표준<br>적응형 평가 시스템
+                    </h3>
+                    <p class="text-base text-slate-500 leading-relaxed mb-6">
+                        국가직무능력표준(NCS)에 기반한 역량 체계로 학생의 강점과 취약점을 정밀하게 분석합니다.
+                        취약 영역 집중 학습 모드로 효율적인 보충 학습을 제공합니다.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 3단계 역량 체계 (주분류 → 소분류 → 세부역량)</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 취약점 자동 분석 및 맞춤 문제 제공</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 최대 3회 재시도로 학습 기회 확대</li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500"></i> 학급별 역량 통계 대시보드</li>
+                    </ul>
+                </div>
+                <div class="order-1 lg:order-2 anim-fade-right">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                        <h4 class="text-sm font-semibold text-slate-400 mb-6">역량 분석 리포트</h4>
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">수리능력</span>
+                                    <span class="text-sm font-bold text-brand-600">85%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill bg-brand-500" data-width="85"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">언어능력</span>
+                                    <span class="text-sm font-bold text-emerald-600">92%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill bg-emerald-500" data-width="92"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">창의적사고</span>
+                                    <span class="text-sm font-bold text-purple-600">78%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill bg-purple-500" data-width="78"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">과학적사고</span>
+                                    <span class="text-sm font-bold text-amber-600">65%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill bg-amber-500" data-width="65"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">문제해결능력</span>
+                                    <span class="text-sm font-bold text-cyan-600">88%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill bg-cyan-500" data-width="88"></div></div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-slate-100 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                                <i class="fa-solid fa-triangle-exclamation text-red-500 text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400">취약 영역 감지</span>
+                                <p class="text-sm font-semibold text-red-600">과학적사고 — 맞춤 보충 학습 추천</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 5: Content Types Grid  -->
+    <!-- ============================== -->
+    <section id="content-types" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 anim-fade-up">
+                <span class="inline-flex items-center gap-2 text-brand-600 text-sm font-semibold tracking-wider uppercase mb-4">
+                    <i class="fa-solid fa-grid-2"></i> CONTENT TYPES
+                </span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                    풍부한 학습 콘텐츠 유형
+                </h2>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    특수교육 현장에 최적화된 다양한 상호작용 콘텐츠
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Content type cards -->
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-1">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-blue-500 to-blue-600"><i class="fa-solid fa-list-check"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">객관식 문제</h4>
+                            <p class="text-sm text-slate-500">보기 선택형 자동 채점</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-2">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-emerald-500 to-emerald-600"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">OX 퀴즈</h4>
+                            <p class="text-sm text-slate-500">참/거짓 즉시 판정</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-3">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-purple-500 to-purple-600"><i class="fa-solid fa-hand-pointer"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">선택형</h4>
+                            <p class="text-sm text-slate-500">다양한 선택 문제</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-4">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-amber-500 to-amber-600"><i class="fa-solid fa-keyboard"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">단답형</h4>
+                            <p class="text-sm text-slate-500">짧은 답변 입력</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-1">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-rose-500 to-rose-600"><i class="fa-solid fa-pen-fancy"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">서술형</h4>
+                            <p class="text-sm text-slate-500">긴 텍스트 답변</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-2">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-cyan-500 to-cyan-600"><i class="fa-solid fa-up-down-left-right"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">드래그 앤 드롭</h4>
+                            <p class="text-sm text-slate-500">끌어다 놓기 활동</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-3">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-indigo-500 to-indigo-600"><i class="fa-solid fa-diagram-project"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">선 잇기</h4>
+                            <p class="text-sm text-slate-500">항목 연결 + 부분 점수</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-4">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-teal-500 to-teal-600"><i class="fa-solid fa-arrow-down-1-9"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">순서 배열</h4>
+                            <p class="text-sm text-slate-500">올바른 순서 맞추기</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-1">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-pink-500 to-pink-600"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">건강생활습관</h4>
+                            <p class="text-sm text-slate-500">2주 건강 습관 추적</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-2">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-orange-500 to-orange-600"><i class="fa-solid fa-stopwatch"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">체력 측정</h4>
+                            <p class="text-sm text-slate-500">시간 기록 및 향상률</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-3">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-lime-500 to-lime-600"><i class="fa-solid fa-paper-plane"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">원샷 제출</h4>
+                            <p class="text-sm text-slate-500">즉시 완료 처리</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-type-card bg-white rounded-2xl p-6 anim-scale delay-4">
+                    <div class="flex items-center gap-4">
+                        <div class="feature-icon bg-gradient-to-br from-violet-500 to-violet-600"><i class="fa-solid fa-person-running"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">앞구르기 평가</h4>
+                            <p class="text-sm text-slate-500">5회 시도 기록 및 평가</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 6: Teacher / Student   -->
+    <!-- ============================== -->
+    <section id="roles" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 anim-fade-up">
+                <span class="inline-flex items-center gap-2 text-brand-600 text-sm font-semibold tracking-wider uppercase mb-4">
+                    <i class="fa-solid fa-users"></i> FOR EVERYONE
+                </span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                    교사와 학생, 모두를 위한 설계
+                </h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6">
+                <!-- Teacher Panel -->
+                <div class="panel-teacher rounded-2xl p-8 lg:p-10 anim-fade-left">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center">
+                            <i class="fa-solid fa-chalkboard-user text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">선생님을 위한 메가클래스</h3>
+                            <p class="text-sm text-slate-500">수업 준비 시간을 획기적으로 줄여드립니다</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-brand-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">AI 콘텐츠 자동 생성</h4>
+                                <p class="text-sm text-slate-500">프롬프트로 즉시 학습 자료 생성</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-chart-line text-brand-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">실시간 학습 통계</h4>
+                                <p class="text-sm text-slate-500">학급별, 학생별 진도 및 성취도 분석</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-users-gear text-brand-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">학생 관리</h4>
+                                <p class="text-sm text-slate-500">CSV 일괄 등록, 비밀번호 초기화, 학급 배정</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-file-csv text-brand-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">데이터 내보내기</h4>
+                                <p class="text-sm text-slate-500">통계, 평가 결과 CSV 다운로드</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Student Panel -->
+                <div class="panel-student rounded-2xl p-8 lg:p-10 anim-fade-right">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500 flex items-center justify-center">
+                            <i class="fa-solid fa-user-graduate text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">학생을 위한 메가클래스</h3>
+                            <p class="text-sm text-slate-500">자기 속도로 즐겁게 배울 수 있어요</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-gauge text-amber-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">개별 맞춤 학습 속도</h4>
+                                <p class="text-sm text-slate-500">내 속도에 맞춰 천천히 배워요</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-gamepad text-amber-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">재미있는 학습 활동</h4>
+                                <p class="text-sm text-slate-500">드래그, 선잇기, 순서맞추기 등 다양한 활동</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-trophy text-amber-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">성취 배지와 보상</h4>
+                                <p class="text-sm text-slate-500">완벽, 꾸준함, 향상 등 다양한 배지 획득</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-note-sticky text-amber-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-700">개인 학습 노트</h4>
+                                <p class="text-sm text-slate-500">슬라이드별 메모 작성 및 저장</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 8: CTA                 -->
+    <!-- ============================== -->
+    <section class="cta-bg py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="anim-fade-up">
+                <h2 class="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                    지금 바로 시작하세요
+                </h2>
+                <p class="text-lg text-indigo-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    메가클래스로 특수교육의 새로운 가능성을 열어보세요.<br>
+                    AI가 만드는 맞춤형 학습으로 모든 학생의 성장을 지원합니다.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/accounts/register/teacher/" class="btn-primary inline-flex items-center justify-center gap-2 bg-white text-brand-700 font-bold text-base px-8 py-4 rounded-2xl shadow-lg">
+                        <i class="fa-solid fa-user-plus"></i> 무료 교사 가입
                     </a>
-                   
-                </div>
-                
-                <!-- 성취 통계 -->
-                <div class="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
-                    <div class="happy-card rounded-3xl p-8 wiggle">
-                        <div class="text-5xl mb-4">🏫</div>
-                        <h3 class="text-4xl font-bold mb-2 rainbow-text">50+</h3>
-                        <p class="text-purple-600 font-bold text-xl">행복한 학교</p>
-                    </div>
-                    <div class="happy-card rounded-3xl p-8 bounce-happy" style="animation-delay: 0.2s;">
-                        <div class="text-5xl mb-4">👦👧</div>
-                        <h3 class="text-4xl font-bold mb-2 rainbow-text">3,000+</h3>
-                        <p class="text-purple-600 font-bold text-xl">즐거운 친구들</p>
-                    </div>
-                    <div class="happy-card rounded-3xl p-8 heartbeat" style="animation-delay: 0.4s;">
-                        <div class="text-5xl mb-4">🎉</div>
-                        <h3 class="text-4xl font-bold mb-2 rainbow-text">98%</h3>
-                        <p class="text-purple-600 font-bold text-xl">행복 지수</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 학습 과목 섹션 -->
-    <section id="subjects" class="py-24 bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-20 scroll-animate">
-                <h2 class="text-6xl font-bold rainbow-text mb-6">
-                    🎯 재미있는 학습 과목들 🎯
-                </h2>
-                <p class="text-3xl text-purple-600 font-bold max-w-3xl mx-auto">
-                    모든 친구들이 좋아하는 다양한 과목으로 즐겁게 배워요!
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="location.href='/subjects/korean/'">
-                    <div class="text-6xl mb-4">📖</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">한글 배우기</h3>
-                    <p class="text-lg text-gray-600">재미있는 글자와 단어 학습</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="location.href='/subjects/math/'">
-                    <div class="text-6xl mb-4">🔢</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">숫자 놀이</h3>
-                    <p class="text-lg text-gray-600">신나는 숫자와 계산 게임</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="location.href='/subjects/art/'">
-                    <div class="text-6xl mb-4">🎨</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">그림 그리기</h3>
-                    <p class="text-lg text-gray-600">창의적인 예술 활동</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="location.href='/subjects/music/'">
-                    <div class="text-6xl mb-4">🎵</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">노래하기</h3>
-                    <p class="text-lg text-gray-600">즐거운 음악과 리듬</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="location.href='/subjects/pe/'">
-                    <div class="text-6xl mb-4">⚽</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">몸 움직이기</h3>
-                    <p class="text-lg text-gray-600">건강한 신체 활동</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="location.href='/subjects/science/'">
-                    <div class="text-6xl mb-4">🔬</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">신기한 실험</h3>
-                    <p class="text-lg text-gray-600">재미있는 과학 탐험</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="location.href='/subjects/social/'">
-                    <div class="text-6xl mb-4">🌍</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">세상 알기</h3>
-                    <p class="text-lg text-gray-600">우리 주변 세계 탐구</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="location.href='/subjects/life/'">
-                    <div class="text-6xl mb-4">🏠</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-4">생활 배우기</h3>
-                    <p class="text-lg text-gray-600">일상생활 기술 연습</p>
-                    <div class="mt-4 text-yellow-500">⭐⭐⭐⭐⭐</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 학습 기능 섹션 -->
-    <section id="features" class="py-24 bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-20 scroll-animate">
-                <h2 class="text-6xl font-bold rainbow-text mb-6">
-                    🎊 특별한 학습 기능들 🎊
-                </h2>
-                <p class="text-3xl text-purple-600 font-bold max-w-4xl mx-auto">
-                    모든 친구들이 재미있게 배울 수 있는 맞춤형 기능들이 가득해요!
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <!-- 개별 맞춤 학습 -->
-                <div class="happy-card rounded-3xl p-10 text-center wiggle" onclick="location.href='/features/personalized/'">
-                    <div class="text-7xl mb-6">🎯</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">개별 맞춤 학습</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        각 친구의 속도에 맞춰서<br>천천히 차근차근 배워요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">✅</span>개인별 학습 속도 조절
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">✅</span>쉬운 설명과 큰 글씨
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">✅</span>반복 학습 지원
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 재미있는 이벤트 -->
-                <div class="happy-card rounded-3xl p-10 text-center bounce-happy" onclick="location.href='/features/events/'">
-                    <div class="text-7xl mb-6">🎉</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">재미있는 이벤트</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        문제를 맞힐 때마다<br>신나는 축하 파티가 열려요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🎊</span>축하 애니메이션
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🏆</span>성취 배지 획득
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🎵</span>기쁜 음악과 효과음
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 쉬운 조작 -->
-                <div class="happy-card rounded-3xl p-10 text-center heartbeat" onclick="location.href='/features/interface/'">
-                    <div class="text-7xl mb-6">👆</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">쉬운 조작</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        큰 버튼과 간단한 터치로<br>누구나 쉽게 사용할 수 있어요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">👆</span>큰 버튼과 아이콘
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🗣️</span>음성 안내 지원
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🌈</span>밝고 예쁜 화면
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 선생님 도구 -->
-                <div class="happy-card rounded-3xl p-10 text-center rainbow-float" onclick="location.href='/teacher/dashboard/'">
-                    <div class="text-7xl mb-6">👩‍🏫</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">선생님 도구</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        선생님이 각 친구의 성장을<br>쉽게 확인할 수 있어요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">📊</span>학습 진도 관리
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">💝</span>개별 피드백 작성
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">📈</span>성장 기록 추적
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 협력 학습 -->
-                <div class="happy-card rounded-3xl p-10 text-center wiggle" onclick="location.href='/features/collaboration/'">
-                    <div class="text-7xl mb-6">🤝</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">함께 배우기</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        친구들과 함께 도우며<br>즐겁게 학습해요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">👫</span>친구와 함께 문제 풀기
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🎁</span>도움 주고받기
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🌟</span>팀 성취 축하하기
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 안전한 환경 -->
-                <div class="happy-card rounded-3xl p-10 text-center bounce-happy" onclick="location.href='/features/safety/'">
-                    <div class="text-7xl mb-6">🛡️</div>
-                    <h3 class="text-3xl font-bold text-purple-600 mb-6">안전한 환경</h3>
-                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
-                        모든 친구들이 안전하고<br>편안하게 학습할 수 있어요!
-                    </p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">🔒</span>안전한 학습 공간
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">💝</span>긍정적인 피드백만
-                        </div>
-                        <div class="flex items-center justify-center text-lg text-green-600">
-                            <span class="mr-3">😊</span>스트레스 없는 학습
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 성취와 보상 섹션 -->
-    <section id="achievements" class="py-24 bg-gradient-to-br from-orange-100 via-pink-100 to-red-100">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-20 scroll-animate">
-                <h2 class="text-6xl font-bold rainbow-text mb-6">
-                    🏆 멋진 성취와 보상들 🏆
-                </h2>
-                <p class="text-3xl text-purple-600 font-bold max-w-4xl mx-auto">
-                    열심히 학습한 모든 친구들에게 특별한 선물이 있어요!
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                <div class="happy-card rounded-3xl p-8 text-center heartbeat" onclick="achievementClick('별')">
-                    <div class="text-6xl mb-4">⭐</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-2">별 모으기</h3>
-                    <p class="text-lg text-gray-600">문제 맞힐 때마다 별 획득!</p>
-                    <div class="mt-4 text-orange-500 text-xl">📊 2,847개</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center bounce-happy" onclick="achievementClick('배지')">
-                    <div class="text-6xl mb-4">🏅</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-2">특별 배지</h3>
-                    <p class="text-lg text-gray-600">성취 단계별 멋진 배지!</p>
-                    <div class="mt-4 text-orange-500 text-xl">🏆 156개</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center wiggle" onclick="achievementClick('인증서')">
-                    <div class="text-6xl mb-4">📜</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-2">수료증</h3>
-                    <p class="text-lg text-gray-600">과목 완주 시 예쁜 수료증!</p>
-                    <div class="mt-4 text-orange-500 text-xl">📋 89개</div>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-8 text-center rainbow-float" onclick="achievementClick('선물')">
-                    <div class="text-6xl mb-4">🎁</div>
-                    <h3 class="font-bold text-2xl text-purple-600 mb-2">깜짝 선물</h3>
-                    <p class="text-lg text-gray-600">특별한 날의 놀라운 선물!</p>
-                    <div class="mt-4 text-orange-500 text-xl">🎊 23개</div>
-                </div>
-            </div>
-            
-            <!-- 성과 통계 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="happy-card rounded-3xl p-10 text-center wiggle">
-                    <div class="text-7xl mb-6">😊</div>
-                    <h3 class="text-4xl font-bold rainbow-text mb-4">98%</h3>
-                    <p class="text-2xl text-purple-600 font-bold">행복한 친구들</p>
-                    <p class="text-lg text-gray-600 mt-4">매일 즐겁게 학습하는 친구들</p>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-10 text-center bounce-happy">
-                    <div class="text-7xl mb-6">📈</div>
-                    <h3 class="text-4xl font-bold rainbow-text mb-4">85%</h3>
-                    <p class="text-2xl text-purple-600 font-bold">실력 향상</p>
-                    <p class="text-lg text-gray-600 mt-4">꾸준한 성장을 보이는 친구들</p>
-                </div>
-                
-                <div class="happy-card rounded-3xl p-10 text-center heartbeat">
-                    <div class="text-7xl mb-6">💝</div>
-                    <h3 class="text-4xl font-bold rainbow-text mb-4">100%</h3>
-                    <p class="text-2xl text-purple-600 font-bold">선생님 만족</p>
-                    <p class="text-lg text-gray-600 mt-4">모든 선생님들의 높은 만족도</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 시작하기 섹션 -->
-    <section class="py-24 rainbow-gradient">
-        <div class="container mx-auto px-6">
-            <div class="text-center text-white scroll-animate">
-                <h2 class="text-6xl font-bold mb-8 bounce-happy">
-                    🌟 지금 바로 시작해요! 🌟
-                </h2>
-                <p class="text-3xl mb-12 max-w-4xl mx-auto leading-relaxed">
-                    모든 친구들이 행복하게 배우고 성장할 수 있는<br>
-                    <strong>✨ 특별한 학습 여행 ✨</strong>이 기다리고 있어요!
-                </p>
-                <div class="flex flex-col sm:flex-row gap-8 justify-center">
-                    <button class="big-happy-btn heartbeat" onclick="startLearning()" style="background: linear-gradient(45deg, #ff6b6b, #feca57); font-size: 28px; padding: 25px 50px;">
-                        🎊 학습 시작하기 🎊
-                    </button>
-                    <button class="big-happy-btn rainbow-float" onclick="showDemo()" style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); font-size: 28px; padding: 25px 50px;">
-                        🎮 체험해보기 🎮
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 푸터 -->
-    <footer class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
-        <div class="container mx-auto px-6">
-            <div class="text-center">
-                <div class="flex items-center justify-center space-x-4 mb-8">
-                    <div class="w-16 h-16 rainbow-gradient rounded-full flex items-center justify-center bounce-happy">
-                        <span class="text-3xl">🌈</span>
-                    </div>
-                    <div>
-                        <span class="font-bold text-3xl">해피 러닝</span>
-                        <div class="text-purple-200 text-lg">✨ 모든 친구들의 행복한 학습 친구 ✨</div>
-                    </div>
-                </div>
-                
-                <p class="text-2xl mb-8 text-purple-100">
-                    📞 문의: 02-2226-4279 | 📧 kmetastudy@gmail.com
-                </p>
-
-                <p class="text-xl mb-4">
-                    <a href="https://noon-cucumber-fac.notion.site/2f6f51bda54f804883a8ee378c9f8fa1"
-                       target="_blank"
-                       class="text-purple-200 hover:text-white underline">
-                        메가클래스 개인정보 규정
+                    <a href="/accounts/login/" class="btn-outline inline-flex items-center justify-center gap-2 border-2 border-white/40 text-white font-semibold text-base px-8 py-4 rounded-2xl">
+                        <i class="fa-solid fa-right-to-bracket"></i> 로그인
                     </a>
-                </p>
-
-                <div class="text-lg text-purple-200">
-                    <p>&copy; 2025 해피 러닝. 모든 친구들의 꿈을 응원합니다. 💝</p>
-                    <p class="mt-2">특별한 도움이 필요한 모든 친구들을 위한 맞춤형 학습 플랫폼</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- ============================== -->
+    <!-- SECTION 9: Footer              -->
+    <!-- ============================== -->
+    <footer class="bg-slate-900 text-slate-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-12 mb-12">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-purple-500 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">메가클래스</span>
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        AI 기반 특수교육 맞춤형 학습 플랫폼.<br>
+                        모든 학생이 자기 속도로 배우고 성장할 수 있는 교육 환경을 만듭니다.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">바로가기</h4>
+                    <ul class="space-y-3">
+                        <li><a href="/accounts/login/" class="text-sm text-slate-400 hover:text-white transition-colors">로그인</a></li>
+                        <li><a href="/accounts/register/teacher/" class="text-sm text-slate-400 hover:text-white transition-colors">교사 가입</a></li>
+                        <li><a href="#features" class="text-sm text-slate-400 hover:text-white transition-colors">주요 기능</a></li>
+                        <li><a href="https://noon-cucumber-fac.notion.site/2f6f51bda54f804883a8ee378c9f8fa1" target="_blank" rel="noopener noreferrer" class="text-sm text-slate-400 hover:text-white transition-colors">개인정보 규정</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">문의</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-400">
+                            <i class="fa-solid fa-phone text-brand-400"></i> 02-2226-4279
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-400">
+                            <i class="fa-solid fa-envelope text-brand-400"></i> kmetastudy@gmail.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 text-center">
+                <p class="text-sm text-slate-500">&copy; 2025 메가클래스. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- 축하 이벤트 요소들 -->
-    <div id="celebration-container" class="fixed inset-0 pointer-events-none z-40"></div>
-
+    <!-- ============================== -->
+    <!-- JavaScript                     -->
+    <!-- ============================== -->
     <script>
-        // 축하 이벤트 함수
-        function showCelebration() {
-            const container = document.getElementById('celebration-container');
-            const emojis = ['🎉', '🎊', '⭐', '💖', '🌟', '✨', '🏆', '🎁', '💝', '🌈'];
-            
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => {
-                    const emoji = document.createElement('div');
-                    emoji.className = 'celebration-particle';
-                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    emoji.style.left = Math.random() * 100 + '%';
-                    emoji.style.animationDelay = Math.random() * 2 + 's';
-                    container.appendChild(emoji);
-                    
-                    setTimeout(() => {
-                        container.removeChild(emoji);
-                    }, 3000);
-                }, i * 200);
-            }
-        }
+    (function() {
+        'use strict';
 
-        // 성공 이벤트 함수
-        function showSuccessEvent() {
-            showCelebration();
-            
-            // 성공 메시지 표시
-            const message = document.createElement('div');
-            message.innerHTML = '🎊 와! 정말 잘했어요! 🎊';
-            message.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-                color: white;
-                padding: 30px 60px;
-                border-radius: 25px;
-                font-size: 36px;
-                font-weight: bold;
-                z-index: 1000;
-                animation: bounce-happy 1s ease-in-out 3;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            `;
-            document.body.appendChild(message);
-            
-            setTimeout(() => {
-                document.body.removeChild(message);
-            }, 3000);
-        }
-
-        // 과목 클릭 이벤트
-        function subjectClick(subject) {
-            showCelebration();
-            alert(`🎯 ${subject} 학습을 시작할까요? 정말 재미있을 거예요! 🎉`);
-        }
-
-        // 기능 클릭 이벤트
-        function featureClick(feature) {
-            showCelebration();
-            alert(`✨ ${feature} 기능이 정말 멋지죠? 더 자세히 알아볼까요? 🌟`);
-        }
-
-        // 성취 클릭 이벤트
-        function achievementClick(achievement) {
-            showCelebration();
-            alert(`🏆 ${achievement} 보상이 정말 특별해요! 열심히 하면 더 많이 받을 수 있어요! 💝`);
-        }
-
-        // 학습 시작 함수
-        function startLearning() {
-            showSuccessEvent();
-            setTimeout(() => {
-                alert('🎊 환영해요! 함께 즐거운 학습 여행을 시작해봐요! 🌈');
-            }, 1000);
-        }
-
-        // 체험 함수
-        function showDemo() {
-            showCelebration();
-            alert('🎮 체험하기를 클릭해주셔서 감사해요! 정말 재미있는 학습이 기다리고 있어요! ✨');
-        }
-
-        // 스크롤 애니메이션
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
+        // ===== IntersectionObserver for scroll animations =====
+        const animObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('show');
+                    entry.target.classList.add('visible');
                 }
             });
-        }, observerOptions);
-
-        document.querySelectorAll('.scroll-animate').forEach(el => {
-            observer.observe(el);
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
         });
 
-        // 랜덤 축하 이벤트 (주기적으로)
-        setInterval(() => {
-            if (Math.random() < 0.1) { // 10% 확률
-                showCelebration();
+        document.querySelectorAll('.anim-fade-up, .anim-fade-left, .anim-fade-right, .anim-scale').forEach(el => {
+            animObserver.observe(el);
+        });
+
+        // ===== Count-up animation =====
+        function animateCount(el) {
+            const target = parseInt(el.dataset.count, 10);
+            const suffix = el.dataset.suffix || '';
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease-out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(target * eased);
+                el.textContent = current.toLocaleString() + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
             }
-        }, 10000);
+            requestAnimationFrame(update);
+        }
 
-        // 페이지 로드시 환영 메시지
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                showCelebration();
-            }, 1000);
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.counted) {
+                    entry.target.dataset.counted = 'true';
+                    animateCount(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('[data-count]').forEach(el => {
+            countObserver.observe(el);
         });
+
+        // ===== Progress bar animation =====
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    entry.target.dataset.animated = 'true';
+                    const width = entry.target.dataset.width;
+                    if (width) {
+                        entry.target.style.width = width + '%';
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.progress-fill[data-width]').forEach(el => {
+            el.style.width = '0%';
+            progressObserver.observe(el);
+        });
+
+        // ===== Navbar scroll effect =====
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            if (currentScroll > 10) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+            lastScroll = currentScroll;
+        }, { passive: true });
+
+        // ===== Mobile menu toggle =====
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                const isOpen = mobileMenu.classList.toggle('open');
+                const icon = menuBtn.querySelector('i');
+                if (isOpen) {
+                    icon.className = 'fa-solid fa-xmark text-xl';
+                    menuBtn.setAttribute('aria-label', '메뉴 닫기');
+                } else {
+                    icon.className = 'fa-solid fa-bars text-xl';
+                    menuBtn.setAttribute('aria-label', '메뉴 열기');
+                }
+            });
+
+            // Close menu on link click
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    const icon = menuBtn.querySelector('i');
+                    icon.className = 'fa-solid fa-bars text-xl';
+                    menuBtn.setAttribute('aria-label', '메뉴 열기');
+                });
+            });
+        }
+
+        // ===== Smooth scroll offset for fixed navbar =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    const navHeight = navbar ? navbar.offsetHeight : 0;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+    })();
     </script>
+
 </body>
 </html>

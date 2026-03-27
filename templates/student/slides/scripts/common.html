@@ -158,4 +158,52 @@
     const style = document.createElement('style');
     style.textContent = '.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }';
     document.head.appendChild(style);
+
+    // 스크롤 리빌 효과 (IntersectionObserver)
+    (function initScrollReveal() {
+        const revealElements = document.querySelectorAll('.scroll-reveal');
+        if (!revealElements.length) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+        revealElements.forEach(el => observer.observe(el));
+    })();
+
+    // 결과 GIF에 정답/오답 클래스 자동 부여
+    (function initResultMotion() {
+        const resultArea = document.getElementById('resultGifArea');
+        if (!resultArea) return;
+
+        const mo = new MutationObserver(() => {
+            const gif = resultArea.querySelector('.result-gif');
+            if (!gif) return;
+            const src = gif.getAttribute('src') || '';
+            if (src.includes('correct') || src.includes('good') || src.includes('success')) {
+                gif.classList.add('correct-result');
+            } else if (src.includes('incorrect') || src.includes('wrong') || src.includes('fail')) {
+                gif.classList.add('incorrect-result');
+            }
+        });
+        mo.observe(resultArea, { childList: true, subtree: true });
+    })();
+
+    // 토스트 모션 개선 (removing 클래스 활용)
+    const _origShowToast = showToast;
+    showToast = function(message, type) {
+        _origShowToast(message, type);
+        const container = document.getElementById('toastContainer');
+        const toast = container.lastElementChild;
+        if (toast) {
+            toast.style.animation = '';
+            void toast.offsetWidth;
+            toast.classList.add('toast');
+        }
+    };
 </script>

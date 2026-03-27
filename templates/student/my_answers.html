@@ -187,8 +187,34 @@
         <!-- 간단한 액션 버튼 -->
         <div class="px-4 py-2 flex items-center justify-between">
             <div class="text-sm text-slate-600">
-                내 답안: 
-                {% if answer.answer.selected_answer %}
+                내 답안:
+                {% if answer.answer.question_type == 'line-matching' and answer.answer.selected_answer.items %}
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        {% for left, right in answer.answer.selected_answer.items %}
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-200">
+                            {{ left }} <i class="fas fa-arrows-alt-h text-indigo-400 mx-0.5"></i> {{ right }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                {% elif answer.answer.question_type == 'drag' and answer.answer.selected_answer.items %}
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        {% for zone, item in answer.answer.selected_answer.items %}
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-200">
+                            {{ zone }} <i class="fas fa-arrow-right text-purple-400 mx-0.5"></i> {{ item }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                {% elif answer.answer.submitted_order %}
+                    <div class="flex flex-wrap items-center gap-1 mt-1">
+                        {% for num in answer.answer.submitted_order|make_list %}
+                            {% if num != ',' %}
+                            <span class="inline-flex items-center justify-center w-6 h-6 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">{{ num }}</span>
+                            {% else %}
+                            <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% elif answer.answer.selected_answer %}
                     {{ answer.answer.selected_answer }}
                 {% elif answer.answer.submitted_text %}
                     {{ answer.answer.submitted_text|truncatewords:10 }}
@@ -301,7 +327,27 @@
                                     <div class="max-w-xs">
                                         <!-- 제출한 답안 표시 -->
                                         <div class="mb-1">
-                                            {% if slide_data.answer.answer.selected_answer %}
+                                            {% if slide_data.answer.answer.question_type == 'line-matching' and slide_data.answer.answer.selected_answer.items %}
+                                                <!-- 선 매칭 답안 (시각적 표시) -->
+                                                <span class="font-medium text-slate-700 text-xs">내 답:</span>
+                                                <div class="flex flex-wrap gap-1 mt-1">
+                                                    {% for left, right in slide_data.answer.answer.selected_answer.items %}
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs border border-indigo-200">
+                                                        {{ left }} <i class="fas fa-arrows-alt-h text-indigo-400" style="font-size:8px"></i> {{ right }}
+                                                    </span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% elif slide_data.answer.answer.question_type == 'drag' and slide_data.answer.answer.selected_answer.items %}
+                                                <!-- 드래그 답안 (시각적 표시) -->
+                                                <span class="font-medium text-slate-700 text-xs">내 답:</span>
+                                                <div class="flex flex-wrap gap-1 mt-1">
+                                                    {% for zone, item in slide_data.answer.answer.selected_answer.items %}
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs border border-purple-200">
+                                                        {{ zone }} <i class="fas fa-arrow-right text-purple-400" style="font-size:8px"></i> {{ item }}
+                                                    </span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% elif slide_data.answer.answer.selected_answer and slide_data.answer.answer.question_type != 'line-matching' and slide_data.answer.answer.question_type != 'drag' %}
                                                 <!-- 객관식 답안 -->
                                                 <span class="font-medium text-slate-700">내 답: </span>
                                                 <span class="text-slate-900">{{ slide_data.answer.answer.selected_answer }}</span>
@@ -321,9 +367,17 @@
                                                     {% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
                                             {% elif slide_data.answer.answer.submitted_order %}
-                                                <!-- 순서 맞추기 답안 -->
-                                                <span class="font-medium text-slate-700">내 답: </span>
-                                                <span class="text-slate-900">{{ slide_data.answer.answer.submitted_order }}</span>
+                                                <!-- 순서 맞추기 답안 (시각적 표시) -->
+                                                <span class="font-medium text-slate-700 text-xs">내 답:</span>
+                                                <div class="flex flex-wrap items-center gap-0.5 mt-1">
+                                                    {% for num in slide_data.answer.answer.submitted_order|make_list %}
+                                                        {% if num != ',' %}
+                                                        <span class="inline-flex items-center justify-center w-5 h-5 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-200">{{ num }}</span>
+                                                        {% else %}
+                                                        <i class="fas fa-chevron-right text-slate-300" style="font-size:8px"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
                                             {% elif slide_data.answer.answer.item %}
                                                 <!-- 실기 기록 -->
                                                 <span class="font-medium text-slate-700">기록: </span>
@@ -332,11 +386,29 @@
                                                 <span class="text-slate-500 text-xs">제출됨</span>
                                             {% endif %}
                                         </div>
-                                        
+
                                         <!-- 정답인 경우에만 정답 표시 -->
                                         {% if slide_data.answer.is_correct %}
                                             <div class="text-xs text-green-600 mt-1">
-                                                {% if slide_data.answer.answer.correct_answer %}
+                                                {% if slide_data.answer.answer.question_type == 'line-matching' and slide_data.answer.answer.correct_answer.items %}
+                                                    <i class="fas fa-check-circle mr-1"></i>정답:
+                                                    <div class="flex flex-wrap gap-1 mt-0.5">
+                                                        {% for left, right in slide_data.answer.answer.correct_answer.items %}
+                                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 text-green-700 rounded-full text-xs border border-green-200">
+                                                            {{ left }} <i class="fas fa-arrows-alt-h text-green-400" style="font-size:8px"></i> {{ right }}
+                                                        </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% elif slide_data.answer.answer.question_type == 'drag' and slide_data.answer.answer.correct_answer.items %}
+                                                    <i class="fas fa-check-circle mr-1"></i>정답:
+                                                    <div class="flex flex-wrap gap-1 mt-0.5">
+                                                        {% for zone, item in slide_data.answer.answer.correct_answer.items %}
+                                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 text-green-700 rounded-full text-xs border border-green-200">
+                                                            {{ zone }} <i class="fas fa-arrow-right text-green-400" style="font-size:8px"></i> {{ item }}
+                                                        </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% elif slide_data.answer.answer.correct_answer and slide_data.answer.answer.question_type != 'line-matching' and slide_data.answer.answer.question_type != 'drag' %}
                                                     <i class="fas fa-check-circle mr-1"></i>
                                                     정답: {{ slide_data.answer.answer.correct_answer }}
                                                 {% elif slide_data.answer.answer.correct_answers %}
@@ -348,10 +420,15 @@
                                                 {% endif %}
                                             </div>
                                         {% elif slide_data.answer.is_correct == False %}
-                                            <!-- 오답인 경우 정답을 보여주지 않음 -->
+                                            <!-- 오답인 경우 -->
                                             <div class="text-xs text-red-600 mt-1">
                                                 <i class="fas fa-times-circle mr-1"></i>
                                                 오답입니다
+                                                {% if slide_data.answer.answer.question_type == 'line-matching' and slide_data.answer.answer.grading_details %}
+                                                    <span class="text-slate-500 ml-1">
+                                                        ({{ slide_data.answer.answer.grading_details.correct_count }}/{{ slide_data.answer.answer.grading_details.total_connections }}개 맞음)
+                                                    </span>
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
