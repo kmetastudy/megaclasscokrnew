@@ -55,11 +55,13 @@ def login_view(request):
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
         school_code = request.POST.get('school_code', '').strip()
+        login_type = request.POST.get('login_type', 'student').strip()
         
         # 추출된 값들 디버깅
         print(f"Extracted username: '{username}' (length: {len(username)})")
         print(f"Extracted password: '{'*' * len(password)}' (length: {len(password)})")
         print(f"Extracted school_code: '{school_code}' (length: {len(school_code)})")
+        print(f"Extracted login_type: '{login_type}'")
         print("="*50)
 
         # 입력값 기본 검증 (더 상세한 체크)
@@ -76,8 +78,8 @@ def login_view(request):
         print("✅ Both username and password are provided")
         user = None
 
-        # ID가 숫자로 시작하면 학생으로 처리
-        if username.isdigit():
+        # 선택된 탭 기준으로 학생/교사 로그인을 구분
+        if login_type == 'student':
             print(f"Processing as STUDENT login: {username}")
             if school_code:
                 try:
@@ -113,7 +115,6 @@ def login_view(request):
                     messages.error(request, '학번 또는 비밀번호가 올바르지 않습니다. 학교를 선택하면 더 정확한 로그인이 가능합니다.')
                     return render(request, 'accounts/login.html', context)
         
-        # ID가 숫자로 시작하지 않으면 교사/관리자로 처리
         else:
             print(f"Processing as TEACHER/ADMIN login: {username}")
             user = authenticate(request, username=username, password=password)

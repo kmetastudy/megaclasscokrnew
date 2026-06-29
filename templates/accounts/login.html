@@ -232,6 +232,7 @@
                 
                 <!-- CSRF 토큰 디버깅 정보 -->
                 <input type="hidden" id="debugCsrfToken" value="{{ csrf_token }}">
+                <input type="hidden" id="login_type" name="login_type" value="student">
                 
                 <!-- 학교 선택 (학생용) -->
                 <div id="schoolSelector" class="school-selector">
@@ -400,7 +401,8 @@ document.getElementById('studentTab').addEventListener('click', function() {
     document.getElementById('usernameLabel').textContent = '학번';
     document.getElementById('username').placeholder = '학번을 입력하세요';
     
-    document.getElementById('school_code').required = true;
+	document.getElementById('school_code').required = true;
+    document.getElementById('login_type').value = 'student';
 });
 
 document.getElementById('teacherTab').addEventListener('click', function() {
@@ -414,8 +416,9 @@ document.getElementById('teacherTab').addEventListener('click', function() {
     document.getElementById('usernameLabel').textContent = '사번';
     document.getElementById('username').placeholder = '사번을 입력하세요';
     
-    document.getElementById('school_code').value = '';
-    document.getElementById('school_code').required = false;
+	document.getElementById('school_code').value = '';
+	document.getElementById('school_code').required = false;
+    document.getElementById('login_type').value = 'teacher';
 });
 
 // 초기 상태 설정 (학생 탭 활성화)
