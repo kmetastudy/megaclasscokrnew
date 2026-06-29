@@ -1,5 +1,10 @@
 from django.contrib import admin
 from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
 import json
 
 from .models import (
@@ -8,6 +13,36 @@ from .models import (
 )
 
 from accounts.models import Class, Student  # accounts 앱에서 import
+
+class BulkCourseAssignmentForm(forms.Form):
+    courses = forms.ModelMultipleChoiceField(
+        label='할당할 코스',
+        queryset=Course.objects.none(),
+        widget=FilteredSelectMultiple('코스', is_stacked=False),
+        help_text='여러 코스를 선택할 수 있습니다.',
+    )
+    classes = forms.ModelMultipleChoiceField(
+        label='할당할 학급',
+        queryset=Class.objects.none(),
+        widget=FilteredSelectMultiple('학급', is_stacked=False),
+        help_text='여러 학급을 선택할 수 있습니다.',
+    )
+    due_date = forms.DateTimeField(
+        label='마감일',
+        required=False,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        input_formats=['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M'],
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['courses'].queryset = Course.objects.order_by('subject_name', 'target')
+        self.fields['classes'].queryset = Class.objects.select_related('school').order_by(
+            'school__name',
+            'grade',
+            'class_number',
+            'name',
+        )
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -75,6 +110,7 @@ class ChasiAdmin(admin.ModelAdmin):
 
 @admin.register(CourseAssignment)
 class CourseAssignmentAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/teacher/courseassignment/change_list.html'
     list_display = ['course', 'get_assigned_to', 'get_assigned_type', 'assigned_at', 'due_date', 'is_completed']
     list_filter = ['is_completed', 'assigned_at', 'due_date']
     search_fields = ['course__subject_name', 'assigned_class__name', 'assigned_student__user__first_name', 'assigned_student__user__last_name']
@@ -111,8 +147,76 @@ class CourseAssignmentAdmin(admin.ModelAdmin):
             'fields': ('due_date', 'is_completed', 'completed_at')
         }),
     )
-    
+
     readonly_fields = ['assigned_at', 'completed_at']
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'bulk-assign/',
+                self.admin_site.admin_view(self.bulk_assign_view),
+                name='teacher_courseassignment_bulk_assign',
+            ),
+        ]
+        return custom_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        if request.user.is_superuser:
+            extra_context['bulk_assign_url'] = reverse('admin:teacher_courseassignment_bulk_assign')
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def bulk_assign_view(self, request):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+
+        if request.method == 'POST':
+            form = BulkCourseAssignmentForm(request.POST)
+            if form.is_valid():
+                courses = form.cleaned_data['courses']
+                classes = form.cleaned_data['classes']
+                due_date = form.cleaned_data['due_date']
+                created_count, skipped_count = self.create_bulk_assignments(courses, classes, due_date)
+                self.message_user(
+                    request,
+                    f'코스 할당 {created_count}개를 생성했고, 기존 할당 {skipped_count}개는 건너뛰었습니다.',
+                )
+                return redirect('admin:teacher_courseassignment_changelist')
+        else:
+            form = BulkCourseAssignmentForm()
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': '코스 대량 할당',
+            'form': form,
+            'opts': self.model._meta,
+            'media': self.media + form.media,
+        }
+        return render(request, 'admin/teacher/courseassignment/bulk_assign.html', context)
+
+    def create_bulk_assignments(self, courses, classes, due_date):
+        course_ids = list(courses.values_list('id', flat=True))
+        class_ids = list(classes.values_list('id', flat=True))
+
+        existing_pairs = set(
+            CourseAssignment.objects.filter(
+                course_id__in=course_ids,
+                assigned_class_id__in=class_ids,
+            ).values_list('course_id', 'assigned_class_id')
+        )
+
+        new_assignments = [
+            CourseAssignment(course_id=course_id, assigned_class_id=class_id, due_date=due_date)
+            for course_id in course_ids
+            for class_id in class_ids
+            if (course_id, class_id) not in existing_pairs
+        ]
+
+        with transaction.atomic():
+            CourseAssignment.objects.bulk_create(new_assignments)
+
+        return len(new_assignments), len(course_ids) * len(class_ids) - len(new_assignments)
 
 @admin.register(ContentTypeCategory)
 class ContentTypeCategoryAdmin(admin.ModelAdmin):
